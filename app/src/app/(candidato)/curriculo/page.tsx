@@ -15,7 +15,7 @@ export default async function CurriculoPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="mb-4 text-xl font-semibold">Analisador de currículo</h1>
+      <h1 className="mb-6 text-3xl sm:text-4xl">Analisador de currículo</h1>
       <UploadForm restante={LIMITE_ANALISES - usadas} />
 
       <div className="mt-6">

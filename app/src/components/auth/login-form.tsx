@@ -16,36 +16,49 @@ export function LoginForm() {
   }
 
   return (
-    <form
-      action={handleSubmit}
-      className="w-full max-w-sm rounded-xl border bg-surface p-8 shadow-sm"
-    >
-      <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-brand text-lg font-bold text-brand-fg">S</div>
-      <h1 className="mb-1 text-xl font-semibold">Sandes Consultoria &amp; RH</h1>
-      <p className="mb-6 text-sm text-foreground/60">Entre com sua conta</p>
+    <form action={handleSubmit} className="w-full">
+      <h1 className="font-display text-4xl font-semibold leading-tight">Bem-vindo(a)</h1>
+      <p className="mb-8 mt-2 text-sm text-foreground/60">
+        Entre com a conta que a consultoria criou para você.
+      </p>
 
-      <label className="mb-1 block text-sm font-medium">E-mail</label>
+      <label htmlFor="email" className="mb-1.5 block text-sm font-medium">
+        E-mail
+      </label>
       <input
+        id="email"
         type="email"
         name="email"
+        autoComplete="email"
         required
-        className="mb-3 w-full rounded border px-3 py-2 text-sm"
+        className="mb-4 w-full px-3.5 py-2"
       />
 
-      <label className="mb-1 block text-sm font-medium">Senha</label>
+      <label htmlFor="senha" className="mb-1.5 block text-sm font-medium">
+        Senha
+      </label>
       <input
+        id="senha"
         type="password"
         name="senha"
+        autoComplete="current-password"
         required
-        className="mb-4 w-full rounded border px-3 py-2 text-sm"
+        className="mb-5 w-full px-3.5 py-2"
       />
 
-      {erro && <p className="mb-3 text-sm text-rose-600">{erro}</p>}
+      {erro && (
+        <p
+          role="alert"
+          className="mb-4 rounded-lg bg-rose-500/10 px-3 py-2 text-sm text-rose-600 dark:text-rose-400"
+        >
+          {erro}
+        </p>
+      )}
 
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-fg hover:bg-brand-hover disabled:opacity-50"
+        className="min-h-12 w-full rounded-xl bg-brand px-4 py-2.5 text-[15px] text-brand-fg disabled:opacity-60"
       >
         {pending ? "Entrando..." : "Entrar"}
       </button>

@@ -8,7 +8,7 @@ export default async function AdminPromptsPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="mb-4 text-xl font-semibold">Biblioteca de prompts de IA</h1>
+      <h1 className="mb-6 text-3xl sm:text-4xl">Biblioteca de prompts de IA</h1>
       <PromptManager prompts={prompts} />
     </div>
   );

@@ -10,7 +10,7 @@ export default async function CandidaturasPage() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">Minhas candidaturas</h1>
+        <h1 className="text-3xl">Minhas candidaturas</h1>
         <NovaCandidaturaForm />
       </div>
       <KanbanCandidaturas candidaturasIniciais={candidaturas} />

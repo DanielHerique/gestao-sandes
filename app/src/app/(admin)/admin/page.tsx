@@ -18,28 +18,28 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-semibold">Dashboard de carteira</h1>
+      <h1 className="mb-6 text-3xl sm:text-4xl">Dashboard de carteira</h1>
 
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-        <div className="rounded-xl border bg-surface p-4">
-          <p className="text-sm text-foreground/60">Total de candidatos</p>
-          <p className="text-2xl font-semibold">{carteira.length}</p>
+        <div className="rounded-2xl border bg-surface p-5">
+          <p className="eyebrow !text-foreground/50">Total de candidatos</p>
+          <p className="num mt-3 font-display text-5xl font-semibold leading-none">{carteira.length}</p>
         </div>
-        <div className="rounded-xl border bg-surface p-4">
-          <p className="text-sm text-foreground/60">Engajados</p>
-          <p className="text-2xl font-semibold text-emerald-600">
+        <div className="rounded-2xl border bg-surface p-5">
+          <p className="eyebrow !text-foreground/50">Engajados</p>
+          <p className="num mt-3 font-display text-5xl font-semibold leading-none text-emerald-600">
             {engajados}
           </p>
         </div>
-        <div className="rounded-xl border bg-surface p-4">
-          <p className="text-sm text-foreground/60">Risco de evasão</p>
-          <p className="text-2xl font-semibold text-rose-600">
+        <div className="rounded-2xl border bg-surface p-5">
+          <p className="eyebrow !text-foreground/50">Risco de evasão</p>
+          <p className="num mt-3 font-display text-5xl font-semibold leading-none text-rose-600">
             {emRisco.length}
           </p>
         </div>
-        <div className="rounded-xl border bg-surface p-4">
-          <p className="text-sm text-foreground/60">Documentos pendentes</p>
-          <p className="text-2xl font-semibold text-amber-600">
+        <div className="rounded-2xl border bg-surface p-5">
+          <p className="eyebrow !text-foreground/50">Documentos pendentes</p>
+          <p className="num mt-3 font-display text-5xl font-semibold leading-none text-amber-600">
             {comDocPendente.length}
           </p>
         </div>

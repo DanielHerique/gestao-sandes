@@ -14,7 +14,7 @@ export default async function AdminDocumentosPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="mb-4 text-xl font-semibold">Templates de documentos</h1>
+      <h1 className="mb-6 text-3xl sm:text-4xl">Templates de documentos</h1>
       <TemplateManager templates={templates} candidatos={candidatos} />
     </div>
   );

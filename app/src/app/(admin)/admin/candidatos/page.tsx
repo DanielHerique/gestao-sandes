@@ -8,7 +8,7 @@ export default async function CarteiraPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-semibold">Carteira de candidatos</h1>
+      <h1 className="mb-1 text-3xl sm:text-4xl">Carteira de candidatos</h1>
       <p className="mb-4 text-sm text-foreground/60">
         Filtre por plano, situação de engajamento ou pendências.
       </p>

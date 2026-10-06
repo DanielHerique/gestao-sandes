@@ -79,7 +79,7 @@ export default async function CandidatoDetalhePage({
   return (
     <div className="max-w-5xl">
       <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-semibold">{candidato.nome}</h1>
+        <h1 className="text-3xl">{candidato.nome}</h1>
         <RelatorioButton candidatoId={id} />
       </div>
       <p className="mb-6 text-sm text-foreground/60">{candidato.email}</p>

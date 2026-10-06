@@ -39,35 +39,35 @@ export default async function ProgressoPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="mb-4 text-xl font-semibold">Seu progresso</h1>
+      <p className="eyebrow">Jornada</p>
+      <h1 className="mb-6 mt-2 text-3xl sm:text-4xl">Seu progresso</h1>
 
-      <div className="rounded-lg border bg-surface p-6">
-        <div className="flex items-baseline justify-between">
+      <div
+        className="relative overflow-hidden rounded-3xl bg-ink p-6 text-ink-fg sm:p-8"
+        style={{ boxShadow: "var(--shadow-lift)" }}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(242,172,10,.28) 0%, transparent 65%)" }}
+        />
+        <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm text-foreground/60">Nível atual</p>
-            <p className="text-2xl font-semibold">{nivel.nome}</p>
+            <p className="eyebrow !text-brand">Nível atual</p>
+            <p className="mt-2 font-display text-3xl font-semibold">{nivel.nome}</p>
+            <p className="mt-1 text-sm text-ink-muted">{nivel.significado}</p>
           </div>
-          <div className="text-right">
-            <p className="text-sm text-foreground/60">Pontos</p>
-            <p className="text-2xl font-semibold">{pontos}</p>
-          </div>
-        </div>
-
-        <p className="mt-2 text-sm text-foreground/60">{nivel.significado}</p>
-
-        <div className="mt-4 h-2 rounded-full bg-line">
-          <div
-            className="h-2 rounded-full bg-brand"
-            style={{ width: `${progressoNaFaixa}%` }}
-          />
-        </div>
-        {proximo ? (
-          <p className="mt-2 text-xs text-foreground/60">
-            Faltam {faltam} pontos para {proximo.nome}
+          <p className="num font-display text-6xl font-semibold leading-none">
+            {pontos}
+            <span className="ml-2 text-base font-normal text-ink-muted">pontos</span>
           </p>
-        ) : (
-          <p className="mt-2 text-xs text-foreground/60">Nível máximo alcançado</p>
-        )}
+        </div>
+        <div className="relative mt-8 h-2 overflow-hidden rounded-full bg-white/10">
+          <div className="h-full rounded-full bg-brand" style={{ width: `${progressoNaFaixa}%`, boxShadow: "0 0 18px rgba(242,172,10,.6)" }} />
+        </div>
+        <p className="relative mt-3 text-xs text-ink-muted">
+          {proximo ? `Faltam ${faltam} pontos para ${proximo.nome}` : "Nível máximo alcançado"}
+        </p>
       </div>
 
       <div className="mt-6">
