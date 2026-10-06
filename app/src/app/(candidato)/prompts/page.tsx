@@ -7,7 +7,7 @@ export default async function PromptsPage() {
   return (
     <div>
       <h1 className="mb-4 text-xl font-semibold">Biblioteca de prompts de IA</h1>
-      <p className="mb-4 text-sm text-neutral-500">
+      <p className="mb-4 text-sm text-foreground/60">
         Prompts prontos, curados pela consultoria, para você usar em
         ferramentas de IA como ChatGPT ou Claude.
       </p>

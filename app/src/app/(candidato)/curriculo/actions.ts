@@ -10,7 +10,7 @@ import {
   registrarAnalise,
 } from "@/lib/data/curriculo";
 import { registrarEventoPontuacao } from "@/lib/data/pontuacao";
-import { analisarCurriculo } from "@/lib/data/analise-ia";
+import { IaNaoConfiguradaError, analisarCurriculo } from "@/lib/data/analise-ia";
 
 export async function enviarCurriculoParaAnaliseAction(
   formData: FormData,
@@ -31,9 +31,15 @@ export async function enviarCurriculoParaAnaliseAction(
   if (!file || file.size === 0) {
     return { ok: false, mensagem: "Selecione um arquivo de currículo." };
   }
+  if (file.type !== "application/pdf") {
+    return { ok: false, mensagem: "Envie o currículo em PDF." };
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    return { ok: false, mensagem: "O arquivo passa de 10 MB." };
+  }
 
   const supabase = await createClient();
-  const storagePath = `${profile.id}/${Date.now()}-${file.name}`;
+  const storagePath = `${profile.id}/${Date.now()}-${file.name.replace(/[^\w.\-]+/g, "_")}`;
 
   const { error: uploadError } = await supabase.storage
     .from(CURRICULOS_BUCKET)
@@ -44,9 +50,8 @@ export async function enviarCurriculoParaAnaliseAction(
   }
 
   try {
-    // PENDENTE: extração de texto do PDF/DOCX ainda não implementada
-    // (depende do provedor de IA escolhido — ver documentos/PENDENCIAS.md).
-    const resultado = await analisarCurriculo("", vagaComparada);
+    const pdfBase64 = Buffer.from(await file.arrayBuffer()).toString("base64");
+    const resultado = await analisarCurriculo(pdfBase64, vagaComparada);
 
     await registrarAnalise(profile.id, storagePath, {
       sucesso: true,
@@ -64,17 +69,21 @@ export async function enviarCurriculoParaAnaliseAction(
 
     revalidatePath("/curriculo");
     return { ok: true, mensagem: "Análise concluída." };
-  } catch {
-    // Falha técnica (ex: parsing) não deve consumir a cota — PRD 3.3, nota de produto.
+  } catch (erro) {
+    // Falha técnica não consome a cota (só sucesso=true conta) — PRD 3.3.
+    const naoConfigurada = erro instanceof IaNaoConfiguradaError;
     await registrarAnalise(profile.id, storagePath, {
       sucesso: false,
-      erroMensagem: "Provedor de IA não configurado",
+      erroMensagem: naoConfigurada
+        ? "Analisador ainda não ativado neste ambiente"
+        : "Não foi possível analisar o arquivo",
     });
     revalidatePath("/curriculo");
     return {
       ok: false,
-      mensagem:
-        "O analisador de IA ainda não está configurado neste ambiente. O arquivo foi salvo, mas a análise não pôde ser gerada.",
+      mensagem: naoConfigurada
+        ? "O analisador de IA ainda não foi ativado neste ambiente. Seu arquivo foi salvo e a cota não foi usada."
+        : "Não foi possível analisar o arquivo agora. Tente novamente — a cota não foi usada.",
     };
   }
 }

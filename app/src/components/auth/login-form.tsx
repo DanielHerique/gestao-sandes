@@ -18,17 +18,18 @@ export function LoginForm() {
   return (
     <form
       action={handleSubmit}
-      className="w-full max-w-sm rounded-lg border bg-white p-6 dark:bg-neutral-900"
+      className="w-full max-w-sm rounded-xl border bg-surface p-8 shadow-sm"
     >
-      <h1 className="mb-1 text-lg font-semibold">Sandes CRM</h1>
-      <p className="mb-6 text-sm text-neutral-500">Entre com sua conta</p>
+      <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full bg-brand text-lg font-bold text-brand-fg">S</div>
+      <h1 className="mb-1 text-xl font-semibold">Sandes Consultoria &amp; RH</h1>
+      <p className="mb-6 text-sm text-foreground/60">Entre com sua conta</p>
 
       <label className="mb-1 block text-sm font-medium">E-mail</label>
       <input
         type="email"
         name="email"
         required
-        className="mb-3 w-full rounded border px-3 py-2 text-sm dark:bg-neutral-950"
+        className="mb-3 w-full rounded border px-3 py-2 text-sm"
       />
 
       <label className="mb-1 block text-sm font-medium">Senha</label>
@@ -36,7 +37,7 @@ export function LoginForm() {
         type="password"
         name="senha"
         required
-        className="mb-4 w-full rounded border px-3 py-2 text-sm dark:bg-neutral-950"
+        className="mb-4 w-full rounded border px-3 py-2 text-sm"
       />
 
       {erro && <p className="mb-3 text-sm text-rose-600">{erro}</p>}
@@ -44,7 +45,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+        className="w-full rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-fg hover:bg-brand-hover disabled:opacity-50"
       >
         {pending ? "Entrando..." : "Entrar"}
       </button>

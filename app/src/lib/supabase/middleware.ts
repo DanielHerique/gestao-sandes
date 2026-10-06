@@ -49,14 +49,14 @@ export async function updateSession(request: NextRequest) {
 
     if (profile?.role !== "admin") {
       const url = request.nextUrl.clone();
-      url.pathname = "/candidaturas";
+      url.pathname = "/inicio";
       return NextResponse.redirect(url);
     }
   }
 
   if (user && pathname === "/login") {
     const url = request.nextUrl.clone();
-    url.pathname = "/candidaturas";
+    url.pathname = "/";
     return NextResponse.redirect(url);
   }
 

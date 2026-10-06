@@ -102,7 +102,7 @@ export function RelatorioButton({ candidatoId }: { candidatoId: string }) {
     <button
       onClick={handleClick}
       disabled={pending}
-      className="rounded-md border px-3 py-1.5 text-sm hover:bg-neutral-100 disabled:opacity-50 dark:hover:bg-neutral-800"
+      className="rounded-md border px-3 py-1.5 text-sm hover:bg-brand-soft disabled:opacity-50"
     >
       {pending ? "Gerando..." : "Exportar relatório (PDF)"}
     </button>

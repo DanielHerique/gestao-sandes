@@ -84,7 +84,7 @@ export function Shazam({
 
   return (
     <div>
-      <p className="mb-4 text-sm text-neutral-500">
+      <p className="mb-4 text-sm text-foreground/60">
         Ferramenta Shazam — módulo de Autoconhecimento (Essência & Propósito).
       </p>
 
@@ -92,20 +92,20 @@ export function Shazam({
         {ETAPAS.map((etapa) => (
           <div
             key={etapa.titulo}
-            className="rounded-lg border bg-white p-4 dark:bg-neutral-900"
+            className="rounded-lg border bg-surface p-4"
           >
             <h3 className="mb-3 text-sm font-semibold">{etapa.titulo}</h3>
             <div className="space-y-3">
               {etapa.campos.map((campo) => (
                 <div key={campo}>
-                  <label className="mb-1 block text-xs text-neutral-500">
+                  <label className="mb-1 block text-xs text-foreground/60">
                     {LABELS[campo]}
                   </label>
                   <textarea
                     defaultValue={dados[campo] ?? ""}
                     onBlur={(e) => handleChange(campo, e.target.value)}
                     rows={2}
-                    className="w-full rounded border px-2 py-1.5 text-sm dark:bg-neutral-950"
+                    className="w-full rounded border px-2 py-1.5 text-sm"
                   />
                 </div>
               ))}
@@ -118,7 +118,7 @@ export function Shazam({
         <button
           disabled={pending}
           onClick={() => salvar("em_andamento")}
-          className="rounded-md border px-4 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
+          className="rounded-md border px-4 py-2 text-sm hover:bg-brand-soft"
         >
           Salvar rascunho
         </button>

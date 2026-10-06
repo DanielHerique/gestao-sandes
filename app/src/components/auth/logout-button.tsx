@@ -10,7 +10,7 @@ export function LogoutButton() {
     <button
       disabled={pending}
       onClick={() => startTransition(() => logoutAction())}
-      className="rounded-md px-3 py-2 text-left text-sm text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+      className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-foreground/60 hover:bg-brand-soft"
     >
       Sair
     </button>

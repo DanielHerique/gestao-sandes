@@ -10,7 +10,7 @@ export default async function DocumentosPage() {
     <div className="max-w-2xl">
       <h1 className="mb-4 text-xl font-semibold">Meus documentos</h1>
       {documentos.length === 0 ? (
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-foreground/60">
           Nenhum documento liberado pela consultoria ainda.
         </p>
       ) : (

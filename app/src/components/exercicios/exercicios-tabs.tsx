@@ -48,16 +48,16 @@ export function ExerciciosTabs({
 
   return (
     <div>
-      <div className="mb-4 flex gap-1 border-b">
+      <div className="-mx-4 mb-4 flex gap-1 overflow-x-auto border-b px-4 sm:mx-0 sm:px-0">
         {abas.map((item) => (
           <button
             key={item.id}
             disabled={!item.disponivel}
             onClick={() => setAba(item.id)}
-            className={`px-4 py-2 text-sm ${
+            className={`shrink-0 whitespace-nowrap px-4 py-3 text-sm ${
               aba === item.id
-                ? "border-b-2 border-blue-600 font-medium"
-                : "text-neutral-500"
+                ? "border-b-2 border-brand font-medium"
+                : "text-foreground/60"
             } ${!item.disponivel ? "cursor-not-allowed opacity-40" : ""}`}
             title={
               !item.disponivel

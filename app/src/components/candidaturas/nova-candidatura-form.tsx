@@ -36,7 +36,7 @@ export function NovaCandidaturaForm() {
     return (
       <button
         onClick={() => setAberto(true)}
-        className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        className="min-h-11 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-fg hover:bg-brand-hover"
       >
         + Nova candidatura
       </button>
@@ -47,68 +47,68 @@ export function NovaCandidaturaForm() {
     <form
       ref={formRef}
       action={handleSubmit}
-      className="mb-4 grid max-w-2xl grid-cols-2 gap-3 rounded-lg border bg-white p-4 dark:bg-neutral-900"
+      className="mb-4 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2 rounded-lg border bg-surface p-4"
     >
       <input
         name="cargo"
         placeholder="Cargo *"
         required
-        className="col-span-1 rounded border px-3 py-2 text-sm dark:bg-neutral-950"
+        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
       />
       <input
         name="empresa"
         placeholder="Empresa *"
         required
-        className="col-span-1 rounded border px-3 py-2 text-sm dark:bg-neutral-950"
+        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
       />
       <input
         name="segmento_empresa"
         placeholder="Segmento da empresa"
-        className="col-span-1 rounded border px-3 py-2 text-sm dark:bg-neutral-950"
+        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
       />
       <input
         name="data_envio_curriculo"
         type="date"
-        className="col-span-1 rounded border px-3 py-2 text-sm dark:bg-neutral-950"
+        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
       />
       <input
         name="link_vaga"
         placeholder="Link da vaga"
-        className="col-span-1 rounded border px-3 py-2 text-sm dark:bg-neutral-950"
+        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
       />
       <input
         name="linkedin_empresa"
         placeholder="LinkedIn da empresa"
-        className="col-span-1 rounded border px-3 py-2 text-sm dark:bg-neutral-950"
+        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
       />
       <input
         name="plataforma_envio"
         placeholder="Plataforma de envio (LinkedIn, Gupy...)"
-        className="col-span-1 rounded border px-3 py-2 text-sm dark:bg-neutral-950"
+        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
       />
       <input
         name="perfil_recrutador_linkedin"
         placeholder="Perfil do recrutador (LinkedIn)"
-        className="col-span-1 rounded border px-3 py-2 text-sm dark:bg-neutral-950"
+        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
       />
       <textarea
         name="notas_pessoais"
         placeholder="Notas pessoais"
-        className="col-span-2 rounded border px-3 py-2 text-sm dark:bg-neutral-950"
+        className="col-span-full rounded border px-3 py-2 text-sm"
         rows={2}
       />
-      <div className="col-span-2 flex gap-2">
+      <div className="col-span-full flex gap-2">
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          className="min-h-11 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-fg hover:bg-brand-hover disabled:opacity-50"
         >
           {pending ? "Salvando..." : "Salvar"}
         </button>
         <button
           type="button"
           onClick={() => setAberto(false)}
-          className="rounded-md border px-4 py-2 text-sm"
+          className="min-h-11 rounded-lg border px-4 py-2 text-sm"
         >
           Cancelar
         </button>

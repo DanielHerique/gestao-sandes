@@ -40,7 +40,7 @@ export function ListaMestra({
 
   return (
     <div>
-      <p className="mb-4 text-sm text-neutral-500">
+      <p className="mb-4 text-sm text-foreground/60">
         Base para o Currículo de Impacto. Uma linha por experiência
         profissional.
       </p>
@@ -49,7 +49,7 @@ export function ListaMestra({
         {linhas.map((linha) => (
           <div
             key={linha.id}
-            className="rounded-lg border bg-white p-4 dark:bg-neutral-900"
+            className="rounded-lg border bg-surface p-4"
           >
             <div className="mb-2 flex justify-end">
               <button
@@ -61,7 +61,7 @@ export function ListaMestra({
                 Remover
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {CAMPOS.map((campo) => (
                 <div
                   key={campo.key}
@@ -70,11 +70,11 @@ export function ListaMestra({
                     campo.key === "tarefas_secundarias" ||
                     campo.key === "resultados_alcancados" ||
                     campo.key === "competencias_desenvolvidas"
-                      ? "col-span-2"
-                      : "col-span-1"
+                      ? "sm:col-span-2"
+                      : ""
                   }
                 >
-                  <label className="mb-1 block text-xs text-neutral-500">
+                  <label className="mb-1 block text-xs text-foreground/60">
                     {campo.label}
                   </label>
                   <input
@@ -82,7 +82,7 @@ export function ListaMestra({
                     onBlur={(e) =>
                       handleChange(linha.id, campo.key, e.target.value)
                     }
-                    className="w-full rounded border px-2 py-1.5 text-sm dark:bg-neutral-950"
+                    className="w-full rounded border px-2 py-1.5 text-sm"
                   />
                 </div>
               ))}
@@ -95,7 +95,7 @@ export function ListaMestra({
         onClick={() =>
           startTransition(() => adicionarLinhaListaMestraAction({}))
         }
-        className="mt-4 rounded-md border px-4 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
+        className="mt-4 rounded-md border px-4 py-2 text-sm hover:bg-brand-soft"
       >
         + Adicionar experiência
       </button>

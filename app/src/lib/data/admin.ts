@@ -75,9 +75,31 @@ export function diasDesde(dataISO: string | null): number | null {
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
-/** Sinais de risco de evasão (PRD 4.1 item 6 / 6.3) */
+/**
+ * Sinais de risco de evasão (PRD 4.1 item 6 / 6.3): mais de 7 dias sem
+ * atividade. Quem ainda não registrou nada só entra em risco depois de
+ * 7 dias de conta. Documento pendente é sinalizado à parte, não é risco.
+ */
 export function temRiscoEvasao(resumo: CandidatoResumo): boolean {
   const dias = diasDesde(resumo.ultimaAtividade);
-  const semAtividadeRecente = dias === null || dias > 7;
-  return semAtividadeRecente || resumo.documentosPendentes > 0;
+  if (dias === null) {
+    return (diasDesde(resumo.profile.created_at) ?? 0) > 7;
+  }
+  return dias > 7;
+}
+
+export function paraLinhasCarteira(carteira: CandidatoResumo[]) {
+  return carteira.map((c) => ({
+    id: c.profile.id,
+    nome: c.profile.nome,
+    email: c.profile.email,
+    plano: c.planoAtivo,
+    candidaturasAtivas: c.candidaturasAtivas,
+    totalCandidaturas: c.totalCandidaturas,
+    pontos: c.pontos,
+    diasSemAtividade: diasDesde(c.ultimaAtividade),
+    documentosPendentes: c.documentosPendentes,
+    risco: temRiscoEvasao(c),
+    entrouEm: c.profile.created_at,
+  }));
 }

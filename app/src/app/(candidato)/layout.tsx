@@ -1,41 +1,31 @@
-import Link from "next/link";
+import { AppShell, type NavItem } from "@/components/app-shell";
 import { LogoutButton } from "@/components/auth/logout-button";
+import { requireProfile } from "@/lib/auth/session";
+import { gerarNotificacoesComportamentais } from "@/lib/data/notificacoes-automaticas";
 
-const NAV_ITEMS = [
-  { href: "/candidaturas", label: "Candidaturas" },
-  { href: "/documentos", label: "Documentos" },
-  { href: "/curriculo", label: "Currículo (IA)" },
-  { href: "/progresso", label: "Progresso" },
-  { href: "/exercicios", label: "Exercícios" },
-  { href: "/prompts", label: "Prompts de IA" },
-  { href: "/notificacoes", label: "Notificações" },
+const NAV: NavItem[] = [
+  { href: "/inicio", label: "Início", icon: "🏠" },
+  { href: "/candidaturas", label: "Candidaturas", icon: "📋" },
+  { href: "/documentos", label: "Documentos", icon: "📄" },
+  { href: "/curriculo", label: "Currículo (IA)", icon: "🧠" },
+  { href: "/exercicios", label: "Exercícios", icon: "✍️" },
+  { href: "/progresso", label: "Progresso", icon: "🏆" },
+  { href: "/prompts", label: "Prompts de IA", icon: "💬" },
+  { href: "/notificacoes", label: "Notificações", icon: "🔔" },
 ];
 
-export default function CandidatoLayout({
+export default async function CandidatoLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const profile = await requireProfile();
+  // Regras automáticas (PRD 3.8): idempotente, no máximo 1 aviso por tipo a cada 3 dias.
+  await gerarNotificacoesComportamentais(profile.id).catch(() => undefined);
+
   return (
-    <div className="flex min-h-full">
-      <aside className="flex w-56 shrink-0 flex-col justify-between border-r p-4">
-        <div>
-          <p className="mb-6 text-lg font-semibold">Sandes</p>
-          <nav className="flex flex-col gap-1">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-md px-3 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-        <LogoutButton />
-      </aside>
-      <main className="flex-1 p-6">{children}</main>
-    </div>
+    <AppShell nav={NAV} subtitulo="Consultoria & RH" logoutSlot={<LogoutButton />}>
+      {children}
+    </AppShell>
   );
 }

@@ -48,7 +48,7 @@ export function Pdi({
 
   return (
     <div>
-      <p className="mb-4 text-sm text-neutral-500">
+      <p className="mb-4 text-sm text-foreground/60">
         Plano de Desenvolvimento Individual — módulo de Autoconhecimento
         (Essência & Propósito).
       </p>
@@ -61,11 +61,11 @@ export function Pdi({
           {metasIniciais.map((meta) => (
             <li
               key={meta.id}
-              className="flex items-center justify-between rounded-md border p-3 text-sm dark:border-neutral-800"
+              className="flex items-center justify-between rounded-md border p-3 text-sm"
             >
               <span>
                 {meta.competencia} —{" "}
-                <span className="text-neutral-500">
+                <span className="text-foreground/60">
                   {meta.prazo ? PRAZO_LABEL[meta.prazo] : ""}
                 </span>
               </span>
@@ -85,14 +85,14 @@ export function Pdi({
             value={novaCompetencia}
             onChange={(e) => setNovaCompetencia(e.target.value)}
             placeholder="Competência"
-            className="rounded border px-3 py-1.5 text-sm dark:bg-neutral-950"
+            className="rounded border px-3 py-1.5 text-sm"
           />
           <select
             value={novoPrazo}
             onChange={(e) =>
               setNovoPrazo(e.target.value as "curto" | "medio" | "longo")
             }
-            className="rounded border px-3 py-1.5 text-sm dark:bg-neutral-950"
+            className="rounded border px-3 py-1.5 text-sm"
           >
             <option value="curto">Curto prazo</option>
             <option value="medio">Médio prazo</option>
@@ -106,7 +106,7 @@ export function Pdi({
               );
               setNovaCompetencia("");
             }}
-            className="rounded-md border px-3 py-1.5 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="rounded-md border px-3 py-1.5 text-sm hover:bg-brand-soft"
           >
             Adicionar
           </button>
@@ -119,7 +119,7 @@ export function Pdi({
           {linhas5w2hIniciais.map((linha) => (
             <div
               key={linha.id}
-              className="rounded-lg border bg-white p-4 dark:bg-neutral-900"
+              className="rounded-lg border bg-surface p-4"
             >
               <div className="mb-2 flex justify-end">
                 <button
@@ -131,10 +131,10 @@ export function Pdi({
                   Remover
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 text-sm">
                 {CAMPOS_5W2H.map((c) => (
                   <p key={c.key}>
-                    <span className="text-neutral-500">{c.label}: </span>
+                    <span className="text-foreground/60">{c.label}: </span>
                     {(linha[c.key] as string) || "—"}
                   </p>
                 ))}
@@ -144,7 +144,7 @@ export function Pdi({
         </div>
         <button
           onClick={() => startTransition(() => adicionarPdi5w2hAction({}))}
-          className="mt-3 rounded-md border px-4 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
+          className="mt-3 rounded-md border px-4 py-2 text-sm hover:bg-brand-soft"
         >
           + Adicionar linha 5W2H
         </button>
@@ -158,7 +158,7 @@ export function Pdi({
               atualizarStatusPdiAction("em_andamento"),
             )
           }
-          className="rounded-md border px-4 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
+          className="rounded-md border px-4 py-2 text-sm hover:bg-brand-soft"
         >
           Marcar em andamento
         </button>
@@ -171,7 +171,7 @@ export function Pdi({
         >
           Concluir exercício
         </button>
-        <span className="self-center text-xs text-neutral-500">
+        <span className="self-center text-xs text-foreground/60">
           Status atual: {statusInicial}
         </span>
       </div>

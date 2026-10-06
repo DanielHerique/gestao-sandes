@@ -23,7 +23,7 @@ export function AtribuirPlano({
             atribuirPlanoAction(candidatoId, e.target.value as PlanoNome),
           )
         }
-        className="rounded border px-3 py-1.5 text-sm dark:bg-neutral-950"
+        className="rounded border px-3 py-1.5 text-sm"
       >
         <option value="" disabled>
           Selecionar plano
@@ -34,7 +34,7 @@ export function AtribuirPlano({
           </option>
         ))}
       </select>
-      {pending && <span className="text-xs text-neutral-500">Salvando...</span>}
+      {pending && <span className="text-xs text-foreground/60">Salvando...</span>}
     </div>
   );
 }

@@ -29,7 +29,7 @@ export async function loginAction(
     .eq("id", data.user.id)
     .single();
 
-  redirect(profile?.role === "admin" ? "/admin" : "/candidaturas");
+  redirect(profile?.role === "admin" ? "/admin" : "/inicio");
 }
 
 export async function logoutAction() {

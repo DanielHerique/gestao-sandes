@@ -17,8 +17,8 @@ const STATUS_LABEL: Record<DocumentoStatus, string> = {
 };
 
 const STATUS_COLOR: Record<DocumentoStatus, string> = {
-  liberado: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
-  nao_liberado: "bg-neutral-100 text-neutral-500 dark:bg-neutral-800",
+  liberado: "bg-brand-soft text-brand-strong",
+  nao_liberado: "bg-line text-foreground/60",
   pendente_assinatura:
     "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
   assinado:
@@ -53,8 +53,8 @@ export function DocumentoCard({ documento }: { documento: Documento }) {
   }
 
   return (
-    <div className="rounded-lg border bg-white p-4 dark:bg-neutral-900">
-      <div className="flex items-start justify-between">
+    <div className="rounded-lg border bg-surface p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="font-medium">{documento.titulo}</p>
           <span
@@ -63,17 +63,18 @@ export function DocumentoCard({ documento }: { documento: Documento }) {
             {STATUS_LABEL[documento.status]}
           </span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {documento.status !== "nao_liberado" && (
             <button
               onClick={handleVisualizar}
-              className="rounded border px-3 py-1.5 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              className="rounded border px-3 py-1.5 text-xs hover:bg-brand-soft"
             >
               Ver / baixar
             </button>
           )}
           {documento.requer_assinatura &&
-            documento.status === "liberado" && (
+            (documento.status === "liberado" ||
+              documento.status === "pendente_assinatura") && (
               <>
                 <input
                   ref={inputRef}
@@ -88,7 +89,7 @@ export function DocumentoCard({ documento }: { documento: Documento }) {
                 <button
                   disabled={uploading || pending}
                   onClick={() => inputRef.current?.click()}
-                  className="rounded bg-blue-600 px-3 py-1.5 text-xs text-white hover:bg-blue-700 disabled:opacity-50"
+                  className="rounded bg-brand px-3 py-1.5 text-xs text-brand-fg hover:bg-brand-hover disabled:opacity-50"
                 >
                   {uploading ? "Enviando..." : "Enviar assinado"}
                 </button>

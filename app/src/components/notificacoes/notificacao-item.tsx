@@ -9,17 +9,17 @@ export function NotificacaoItem({ notificacao }: { notificacao: Notificacao }) {
 
   return (
     <li
-      className={`rounded-md border p-3 text-sm dark:border-neutral-800 ${
-        notificacao.lida ? "opacity-60" : "bg-blue-50 dark:bg-blue-950/20"
+      className={`rounded-md border p-3 text-sm ${
+        notificacao.lida ? "opacity-60" : "bg-brand-soft"
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-medium">{notificacao.titulo}</p>
-          <p className="text-neutral-600 dark:text-neutral-400">
+          <p className="text-foreground/70">
             {notificacao.mensagem}
           </p>
-          <p className="mt-1 text-xs text-neutral-400">
+          <p className="mt-1 text-xs text-foreground/50">
             {notificacao.tipo === "institucional" ? "Institucional" : "Comportamental"}
           </p>
         </div>
@@ -29,7 +29,7 @@ export function NotificacaoItem({ notificacao }: { notificacao: Notificacao }) {
             onClick={() =>
               startTransition(() => marcarComoLidaAction(notificacao.id))
             }
-            className="shrink-0 rounded border px-2 py-1 text-xs hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="shrink-0 rounded border px-2 py-1 text-xs hover:bg-brand-soft"
           >
             Marcar como lida
           </button>

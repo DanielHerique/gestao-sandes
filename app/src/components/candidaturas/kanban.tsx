@@ -40,8 +40,10 @@ const COLUNA_COR: Record<CandidaturaStatus, string> = {
 function CandidaturaCard({
   candidatura,
   onToggleChecklist,
+  onMudarStatus,
 }: {
   candidatura: CandidaturaComChecklist;
+  onMudarStatus: (status: CandidaturaStatus) => void;
   onToggleChecklist: (
     item: keyof typeof CHECKLIST_ITEM_LABELS,
     valor: boolean,
@@ -68,7 +70,7 @@ function CandidaturaCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`rounded-lg border bg-white p-3 shadow-sm dark:bg-neutral-900 ${
+      className={`rounded-lg border bg-surface p-3 shadow-sm ${
         isDragging ? "opacity-50" : ""
       }`}
     >
@@ -78,23 +80,38 @@ function CandidaturaCard({
         className="cursor-grab pb-2 active:cursor-grabbing"
       >
         <p className="font-medium">{candidatura.cargo}</p>
-        <p className="text-sm text-neutral-500">{candidatura.empresa}</p>
+        <p className="text-sm text-foreground/60">{candidatura.empresa}</p>
       </div>
 
       <div className="mt-2 flex items-center gap-1.5">
-        <div className="h-1.5 flex-1 rounded-full bg-neutral-200 dark:bg-neutral-700">
+        <div className="h-1.5 flex-1 rounded-full bg-line">
           <div
             className="h-1.5 rounded-full bg-emerald-500"
             style={{ width: `${(concluidos / itensChecklist.length) * 100}%` }}
           />
         </div>
-        <span className="text-xs text-neutral-500">
+        <span className="text-xs text-foreground/60">
           {concluidos}/{itensChecklist.length}
         </span>
       </div>
 
+      <label className="mt-2 flex items-center gap-2 text-xs text-foreground/60">
+        Status
+        <select
+          value={candidatura.status}
+          onChange={(e) => onMudarStatus(e.target.value as CandidaturaStatus)}
+          className="min-h-9 flex-1 rounded-lg border bg-background px-2 text-xs"
+        >
+          {COLUNAS.map((st) => (
+            <option key={st} value={st}>
+              {CANDIDATURA_STATUS_LABELS[st]}
+            </option>
+          ))}
+        </select>
+      </label>
+
       <details className="mt-2">
-        <summary className="cursor-pointer text-xs text-neutral-500">
+        <summary className="cursor-pointer py-1 text-xs text-foreground/60">
           Checklist
         </summary>
         <ul className="mt-1.5 space-y-1">
@@ -121,9 +138,11 @@ function Coluna({
   status,
   candidaturas,
   onToggleChecklist,
+  onMudarStatus,
 }: {
   status: CandidaturaStatus;
   candidaturas: CandidaturaComChecklist[];
+  onMudarStatus: (candidaturaId: string, status: CandidaturaStatus) => void;
   onToggleChecklist: (
     candidaturaId: string,
     item: keyof typeof CHECKLIST_ITEM_LABELS,
@@ -135,13 +154,13 @@ function Coluna({
   return (
     <div
       ref={setNodeRef}
-      className={`flex w-72 shrink-0 flex-col rounded-lg border-t-4 bg-neutral-50 p-3 dark:bg-neutral-950 ${COLUNA_COR[status]} ${
-        isOver ? "ring-2 ring-blue-400" : ""
+      className={`flex w-[85%] shrink-0 snap-center flex-col rounded-xl border-t-4 sm:w-72 sm:snap-start bg-surface p-3 ${COLUNA_COR[status]} ${
+        isOver ? "ring-2 ring-brand" : ""
       }`}
     >
       <h3 className="mb-3 flex items-center justify-between text-sm font-semibold">
         {CANDIDATURA_STATUS_LABELS[status]}
-        <span className="rounded-full bg-neutral-200 px-2 py-0.5 text-xs font-normal dark:bg-neutral-800">
+        <span className="rounded-full bg-line px-2 py-0.5 text-xs font-normal">
           {candidaturas.length}
         </span>
       </h3>
@@ -150,6 +169,7 @@ function Coluna({
           <CandidaturaCard
             key={c.id}
             candidatura={c}
+            onMudarStatus={(novo) => onMudarStatus(c.id, novo)}
             onToggleChecklist={(item, valor) =>
               onToggleChecklist(c.id, item, valor)
             }
@@ -183,10 +203,10 @@ export function KanbanCandidaturas({
     setActiveId(null);
     const { active, over } = event;
     if (!over) return;
+    mudarStatus(active.id as string, over.id as CandidaturaStatus);
+  }
 
-    const novoStatus = over.id as CandidaturaStatus;
-    const candidaturaId = active.id as string;
-
+  function mudarStatus(candidaturaId: string, novoStatus: CandidaturaStatus) {
     setCandidaturas((prev) =>
       prev.map((c) =>
         c.id === candidaturaId ? { ...c, status: novoStatus } : c,
@@ -220,25 +240,27 @@ export function KanbanCandidaturas({
 
   return (
     <DndContext
+      id="kanban-candidaturas"
       sensors={sensors}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-4 sm:mx-0 sm:px-0 lg:gap-4">
         {COLUNAS.map((status) => (
           <Coluna
             key={status}
             status={status}
             candidaturas={candidaturas.filter((c) => c.status === status)}
             onToggleChecklist={handleToggleChecklist}
+            onMudarStatus={mudarStatus}
           />
         ))}
       </div>
       <DragOverlay>
         {activeCandidatura ? (
-          <div className="w-64 rounded-lg border bg-white p-3 shadow-lg dark:bg-neutral-900">
+          <div className="w-64 rounded-lg border bg-surface p-3 shadow-lg">
             <p className="font-medium">{activeCandidatura.cargo}</p>
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-foreground/60">
               {activeCandidatura.empresa}
             </p>
           </div>

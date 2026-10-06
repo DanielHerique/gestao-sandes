@@ -10,7 +10,7 @@ export default async function NotificacoesPage() {
     <div className="max-w-2xl">
       <h1 className="mb-4 text-xl font-semibold">Notificações</h1>
       {notificacoes.length === 0 ? (
-        <p className="text-sm text-neutral-500">Nenhuma notificação ainda.</p>
+        <p className="text-sm text-foreground/60">Nenhuma notificação ainda.</p>
       ) : (
         <ul className="space-y-2">
           {notificacoes.map((n) => (

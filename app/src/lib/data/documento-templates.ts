@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { DOCUMENTOS_BUCKET } from "@/lib/data/documentos";
 import type { DocumentoTemplate } from "@/lib/types/database";
 
 export const TEMPLATES_BUCKET = "documento-templates";
@@ -60,15 +62,34 @@ export async function enviarTemplateEmLote(
 
   if (templateError) throw templateError;
 
-  const inserts = candidatoIds.map((candidatoId) => ({
-    candidato_id: candidatoId,
-    template_id: templateId,
-    titulo: template.titulo,
-    storage_path: template.storage_path,
-    requer_assinatura: template.requer_assinatura,
-    status: "liberado" as const,
-    liberado_em: new Date().toISOString(),
-  }));
+  // O template fica no bucket de templates; cada candidato recebe uma cópia
+  // na própria pasta do bucket de documentos (que ele tem permissão de ler).
+  const admin = createAdminClient();
+  const nomeArquivo = template.storage_path.split("/").pop() ?? "documento";
+  const agora = new Date().toISOString();
+
+  const inserts = [];
+  for (const candidatoId of candidatoIds) {
+    const destino = `${candidatoId}/${Date.now()}-${nomeArquivo}`;
+    const { error: copyError } = await admin.storage
+      .from(TEMPLATES_BUCKET)
+      .copy(template.storage_path, destino, {
+        destinationBucket: DOCUMENTOS_BUCKET,
+      });
+    if (copyError) throw copyError;
+
+    inserts.push({
+      candidato_id: candidatoId,
+      template_id: templateId,
+      titulo: template.titulo,
+      storage_path: destino,
+      requer_assinatura: template.requer_assinatura,
+      status: template.requer_assinatura
+        ? ("pendente_assinatura" as const)
+        : ("liberado" as const),
+      liberado_em: agora,
+    });
+  }
 
   const { error } = await supabase.from("documentos").insert(inserts);
   if (error) throw error;

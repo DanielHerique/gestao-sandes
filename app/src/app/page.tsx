@@ -5,5 +5,5 @@ export default async function Home() {
   const profile = await getSessionProfile();
 
   if (!profile) redirect("/login");
-  redirect(profile.role === "admin" ? "/admin" : "/candidaturas");
+  redirect(profile.role === "admin" ? "/admin" : "/inicio");
 }

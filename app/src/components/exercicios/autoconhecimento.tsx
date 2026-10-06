@@ -59,7 +59,7 @@ export function Autoconhecimento({
 
   return (
     <div>
-      <p className="mb-4 text-sm text-neutral-500">
+      <p className="mb-4 text-sm text-foreground/60">
         Aprofundando o Autoconhecimento — módulo de Autoconhecimento (Essência
         & Propósito).
       </p>
@@ -68,7 +68,7 @@ export function Autoconhecimento({
         {PERGUNTAS.map((p) => (
           <div
             key={p.campo}
-            className="rounded-lg border bg-white p-4 dark:bg-neutral-900"
+            className="rounded-lg border bg-surface p-4"
           >
             <label className="mb-1 block text-sm font-medium">
               {p.label}
@@ -77,19 +77,19 @@ export function Autoconhecimento({
               defaultValue={dados[p.campo] ?? ""}
               onBlur={(e) => handleChange(p.campo, e.target.value)}
               rows={2}
-              className="w-full rounded border px-2 py-1.5 text-sm dark:bg-neutral-950"
+              className="w-full rounded border px-2 py-1.5 text-sm"
             />
           </div>
         ))}
 
-        <div className="rounded-lg border bg-white p-4 dark:bg-neutral-900">
+        <div className="rounded-lg border bg-surface p-4">
           <label className="mb-1 block text-sm font-medium">
             Lista de até 10 empresas-alvo (separadas por vírgula)
           </label>
           <input
             value={empresas}
             onChange={(e) => setEmpresas(e.target.value)}
-            className="w-full rounded border px-2 py-1.5 text-sm dark:bg-neutral-950"
+            className="w-full rounded border px-2 py-1.5 text-sm"
           />
         </div>
       </div>
@@ -98,7 +98,7 @@ export function Autoconhecimento({
         <button
           disabled={pending}
           onClick={() => salvar("em_andamento")}
-          className="rounded-md border px-4 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
+          className="rounded-md border px-4 py-2 text-sm hover:bg-brand-soft"
         >
           Salvar rascunho
         </button>

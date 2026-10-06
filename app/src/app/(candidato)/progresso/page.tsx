@@ -41,37 +41,37 @@ export default async function ProgressoPage() {
     <div className="max-w-3xl">
       <h1 className="mb-4 text-xl font-semibold">Seu progresso</h1>
 
-      <div className="rounded-lg border bg-white p-6 dark:bg-neutral-900">
+      <div className="rounded-lg border bg-surface p-6">
         <div className="flex items-baseline justify-between">
           <div>
-            <p className="text-sm text-neutral-500">Nível atual</p>
+            <p className="text-sm text-foreground/60">Nível atual</p>
             <p className="text-2xl font-semibold">{nivel.nome}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-neutral-500">Pontos</p>
+            <p className="text-sm text-foreground/60">Pontos</p>
             <p className="text-2xl font-semibold">{pontos}</p>
           </div>
         </div>
 
-        <p className="mt-2 text-sm text-neutral-500">{nivel.significado}</p>
+        <p className="mt-2 text-sm text-foreground/60">{nivel.significado}</p>
 
-        <div className="mt-4 h-2 rounded-full bg-neutral-200 dark:bg-neutral-800">
+        <div className="mt-4 h-2 rounded-full bg-line">
           <div
-            className="h-2 rounded-full bg-blue-600"
+            className="h-2 rounded-full bg-brand"
             style={{ width: `${progressoNaFaixa}%` }}
           />
         </div>
         {proximo ? (
-          <p className="mt-2 text-xs text-neutral-500">
+          <p className="mt-2 text-xs text-foreground/60">
             Faltam {faltam} pontos para {proximo.nome}
           </p>
         ) : (
-          <p className="mt-2 text-xs text-neutral-500">Nível máximo alcançado</p>
+          <p className="mt-2 text-xs text-foreground/60">Nível máximo alcançado</p>
         )}
       </div>
 
       <div className="mt-6">
-        <h2 className="mb-3 text-sm font-semibold text-neutral-500">
+        <h2 className="mb-3 text-sm font-semibold text-foreground/60">
           Trilha de níveis
         </h2>
         <ol className="space-y-2">
@@ -80,25 +80,25 @@ export default async function ProgressoPage() {
               key={n.id}
               className={`rounded-md border p-3 text-sm ${
                 n.ordem <= nivel.ordem
-                  ? "border-blue-300 bg-blue-50 dark:bg-blue-950/30"
-                  : "border-neutral-200 dark:border-neutral-800"
+                  ? "border-brand bg-brand-soft"
+                  : "border-line"
               }`}
             >
               <p className="font-medium">
                 {n.ordem}. {n.nome}
               </p>
-              <p className="text-neutral-500">{n.criterioAvanco}</p>
+              <p className="text-foreground/60">{n.criterioAvanco}</p>
             </li>
           ))}
         </ol>
       </div>
 
       <div className="mt-6">
-        <h2 className="mb-3 text-sm font-semibold text-neutral-500">
+        <h2 className="mb-3 text-sm font-semibold text-foreground/60">
           Linha do tempo de atividade
         </h2>
         {eventos.length === 0 ? (
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-foreground/60">
             Nenhuma atividade registrada ainda.
           </p>
         ) : (
@@ -106,7 +106,7 @@ export default async function ProgressoPage() {
             {eventos.map((evento) => (
               <li
                 key={evento.id}
-                className="flex items-center justify-between rounded-md border p-3 text-sm dark:border-neutral-800"
+                className="flex items-center justify-between rounded-md border p-3 text-sm"
               >
                 <span>{ACAO_LABEL[evento.acao] ?? evento.acao}</span>
                 <span className="font-medium text-emerald-600">

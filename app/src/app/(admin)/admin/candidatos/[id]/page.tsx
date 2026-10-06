@@ -45,6 +45,32 @@ export default async function CandidatoDetalhePage({
       listarAnotacoes(id),
     ]);
 
+  const [{ data: shazam }, { data: autoconhecimento }, { data: pdi }, { count: linhasMestra }] =
+    await Promise.all([
+      supabase.from("exercicio_shazam").select("status").eq("candidato_id", id).maybeSingle(),
+      supabase.from("exercicio_autoconhecimento").select("status").eq("candidato_id", id).maybeSingle(),
+      supabase.from("exercicio_pdi_status").select("status").eq("candidato_id", id).maybeSingle(),
+      supabase.from("exercicio_lista_mestra_linhas").select("id", { count: "exact", head: true }).eq("candidato_id", id),
+    ]);
+  const exercicios = [
+    { nome: "Lista Mestra", status: (linhasMestra ?? 0) > 0 ? `${linhasMestra} experiência(s)` : "nao_iniciado" },
+    { nome: "Ferramenta Shazam", status: shazam?.status ?? "nao_iniciado" },
+    { nome: "Autoconhecimento", status: autoconhecimento?.status ?? "nao_iniciado" },
+    { nome: "PDI", status: pdi?.status ?? "nao_iniciado" },
+  ];
+  const ROTULO_EX: Record<string, string> = {
+    nao_iniciado: "Não iniciado",
+    em_andamento: "Em andamento",
+    concluido: "Concluído",
+  };
+  const ROTULO_DOC: Record<string, string> = {
+    liberado: "Liberado",
+    nao_liberado: "Não liberado",
+    pendente_assinatura: "Pendente de assinatura",
+    assinado: "Assinado",
+    vencido: "Vencido",
+  };
+
   const nivel = nivelAtual(pontos);
   const docsPendentes = documentos.filter(
     (d) => d.status === "pendente_assinatura",
@@ -52,15 +78,15 @@ export default async function CandidatoDetalhePage({
 
   return (
     <div className="max-w-5xl">
-      <div className="mb-1 flex items-center justify-between">
+      <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-semibold">{candidato.nome}</h1>
         <RelatorioButton candidatoId={id} />
       </div>
-      <p className="mb-6 text-sm text-neutral-500">{candidato.email}</p>
+      <p className="mb-6 text-sm text-foreground/60">{candidato.email}</p>
 
-      <div className="mb-6 grid grid-cols-3 gap-4">
-        <div className="rounded-lg border bg-white p-4 dark:bg-neutral-900">
-          <p className="text-sm text-neutral-500">Plano contratado</p>
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+        <div className="rounded-xl border bg-surface p-4">
+          <p className="text-sm text-foreground/60">Plano contratado</p>
           <div className="mt-1">
             <AtribuirPlano
               candidatoId={id}
@@ -68,84 +94,115 @@ export default async function CandidatoDetalhePage({
             />
           </div>
         </div>
-        <div className="rounded-lg border bg-white p-4 dark:bg-neutral-900">
-          <p className="text-sm text-neutral-500">Nível / pontos</p>
+        <div className="rounded-xl border bg-surface p-4">
+          <p className="text-sm text-foreground/60">Nível / pontos</p>
           <p className="text-lg font-semibold">
             {nivel.nome} ({pontos} pts)
           </p>
         </div>
-        <div className="rounded-lg border bg-white p-4 dark:bg-neutral-900">
-          <p className="text-sm text-neutral-500">Documentos pendentes</p>
+        <div className="rounded-xl border bg-surface p-4">
+          <p className="text-sm text-foreground/60">Documentos pendentes</p>
           <p className="text-lg font-semibold">{docsPendentes.length}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section>
-          <h2 className="mb-3 text-sm font-semibold text-neutral-500">
+          <h2 className="mb-3 text-sm font-semibold text-foreground/60">
             Candidaturas ({candidaturas.length})
           </h2>
           <ul className="space-y-2">
             {candidaturas.map((c) => (
               <li
                 key={c.id}
-                className="rounded-md border p-2 text-sm dark:border-neutral-800"
+                className="rounded-lg border bg-surface p-3 text-sm"
               >
                 <p className="font-medium">
                   {c.cargo} — {c.empresa}
                 </p>
-                <p className="text-xs text-neutral-500">
+                <p className="text-xs text-foreground/60">
                   {CANDIDATURA_STATUS_LABELS[c.status]}
                 </p>
               </li>
             ))}
             {candidaturas.length === 0 && (
-              <p className="text-sm text-neutral-500">Nenhuma candidatura.</p>
+              <p className="text-sm text-foreground/60">Nenhuma candidatura.</p>
             )}
           </ul>
         </section>
 
         <section>
-          <h2 className="mb-3 text-sm font-semibold text-neutral-500">
+          <h2 className="mb-3 text-sm font-semibold text-foreground/60">
+            Exercícios
+          </h2>
+          <ul className="space-y-2">
+            {exercicios.map((e) => (
+              <li key={e.nome} className="flex items-center justify-between rounded-lg border bg-surface p-3 text-sm">
+                <span>{e.nome}</span>
+                <span className="text-foreground/60">{ROTULO_EX[e.status] ?? e.status}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="mb-3 text-sm font-semibold text-foreground/60">
+            Documentos ({documentos.length})
+          </h2>
+          <ul className="space-y-2">
+            {documentos.map((d) => (
+              <li key={d.id} className="flex items-center justify-between gap-2 rounded-lg border bg-surface p-3 text-sm">
+                <span className="min-w-0 truncate">{d.titulo}</span>
+                <span className="shrink-0 text-foreground/60">{ROTULO_DOC[d.status] ?? d.status}</span>
+              </li>
+            ))}
+            {documentos.length === 0 && (
+              <p className="text-sm text-foreground/60">Nenhum documento enviado.</p>
+            )}
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="mb-3 text-sm font-semibold text-foreground/60">
             Análises de currículo ({analises.length})
           </h2>
           <ul className="space-y-2">
             {analises.map((a) => (
               <li
                 key={a.id}
-                className="rounded-md border p-2 text-sm dark:border-neutral-800"
+                className="rounded-lg border bg-surface p-3 text-sm"
               >
                 {a.sucesso ? `Score ${a.score_geral}` : "Falha na análise"} —{" "}
                 {new Date(a.created_at).toLocaleDateString("pt-BR")}
               </li>
             ))}
             {analises.length === 0 && (
-              <p className="text-sm text-neutral-500">Nenhuma análise.</p>
+              <p className="text-sm text-foreground/60">Nenhuma análise.</p>
             )}
           </ul>
         </section>
 
         <section>
-          <h2 className="mb-3 text-sm font-semibold text-neutral-500">
+          <h2 className="mb-3 text-sm font-semibold text-foreground/60">
             Linha do tempo de pontuação
           </h2>
           <ul className="space-y-1">
             {eventos.slice(0, 10).map((e) => (
               <li key={e.id} className="text-sm">
-                <span className="text-neutral-500">
+                <span className="text-foreground/60">
                   {new Date(e.created_at).toLocaleDateString("pt-BR")}
                 </span>{" "}
                 — {e.acao} (+{e.pontos})
               </li>
             ))}
             {eventos.length === 0 && (
-              <p className="text-sm text-neutral-500">Sem eventos ainda.</p>
+              <p className="text-sm text-foreground/60">Sem eventos ainda.</p>
             )}
           </ul>
         </section>
 
         <section>
-          <h2 className="mb-3 text-sm font-semibold text-neutral-500">
+          <h2 className="mb-3 text-sm font-semibold text-foreground/60">
             Anotações privadas
           </h2>
           <Anotacoes candidatoId={id} anotacoes={anotacoes} />

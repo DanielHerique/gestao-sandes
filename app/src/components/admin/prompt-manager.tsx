@@ -32,20 +32,20 @@ export function PromptManager({ prompts }: { prompts: PromptIA[] }) {
       <form
         ref={formRef}
         action={handleSubmit}
-        className="mb-6 rounded-lg border bg-white p-4 dark:bg-neutral-900"
+        className="mb-6 rounded-lg border bg-surface p-4"
       >
-        <div className="mb-2 grid grid-cols-2 gap-2">
+        <div className="mb-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <input
             name="titulo"
             placeholder="Título"
             required
-            className="rounded border px-3 py-1.5 text-sm dark:bg-neutral-950"
+            className="rounded border px-3 py-1.5 text-sm"
           />
           <input
             name="categoria"
             placeholder="Categoria (ex: Entrevista, LinkedIn)"
             required
-            className="rounded border px-3 py-1.5 text-sm dark:bg-neutral-950"
+            className="rounded border px-3 py-1.5 text-sm"
           />
         </div>
         <textarea
@@ -53,7 +53,7 @@ export function PromptManager({ prompts }: { prompts: PromptIA[] }) {
           placeholder="Texto do prompt"
           required
           rows={4}
-          className="mb-2 w-full rounded border px-3 py-1.5 text-sm dark:bg-neutral-950"
+          className="mb-2 w-full rounded border px-3 py-1.5 text-sm"
         />
         <div className="mb-3 flex gap-4 text-sm">
           <label className="flex items-center gap-1.5">
@@ -76,7 +76,7 @@ export function PromptManager({ prompts }: { prompts: PromptIA[] }) {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-md bg-brand px-4 py-2 text-sm text-brand-fg hover:bg-brand-hover disabled:opacity-50"
         >
           Adicionar prompt
         </button>
@@ -86,16 +86,16 @@ export function PromptManager({ prompts }: { prompts: PromptIA[] }) {
         {prompts.map((p) => (
           <li
             key={p.id}
-            className="flex items-start justify-between rounded-md border p-3 text-sm dark:border-neutral-800"
+            className="flex items-start justify-between rounded-md border p-3 text-sm"
           >
             <div>
               <p className="font-medium">
                 {p.titulo}{" "}
-                <span className="text-xs text-neutral-500">
+                <span className="text-xs text-foreground/60">
                   ({p.categoria})
                 </span>
               </p>
-              <p className="mt-1 text-neutral-500">{p.texto_prompt}</p>
+              <p className="mt-1 text-foreground/60">{p.texto_prompt}</p>
             </div>
             <button
               onClick={() => startTransition(() => excluirPromptAction(p.id))}
