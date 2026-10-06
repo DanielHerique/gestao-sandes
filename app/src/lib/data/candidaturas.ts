@@ -42,6 +42,10 @@ export interface NovaCandidaturaInput {
   notas_pessoais?: string;
 }
 
+export type AtualizacaoCandidatura = Partial<
+  Record<keyof NovaCandidaturaInput, string | null>
+>;
+
 export async function criarCandidatura(
   candidatoId: string,
   input: NovaCandidaturaInput,
@@ -65,7 +69,7 @@ export async function criarCandidatura(
 
 export async function atualizarCandidatura(
   id: string,
-  input: Partial<NovaCandidaturaInput>,
+  input: AtualizacaoCandidatura,
 ): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase
@@ -79,6 +83,18 @@ export async function excluirCandidatura(id: string): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase.from("candidaturas").delete().eq("id", id);
   if (error) throw error;
+}
+
+export async function obterCandidaturaResumo(
+  id: string,
+): Promise<{ status: CandidaturaStatus; updated_at: string } | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("candidaturas")
+    .select("status, updated_at")
+    .eq("id", id)
+    .maybeSingle();
+  return (data as { status: CandidaturaStatus; updated_at: string } | null) ?? null;
 }
 
 export async function moverStatus(

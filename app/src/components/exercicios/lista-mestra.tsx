@@ -1,5 +1,7 @@
 "use client";
 
+import { useFeedback } from "@/components/ui/feedback";
+
 import { useTransition } from "react";
 import type { ExercicioListaMestraLinha } from "@/lib/types/database";
 import {
@@ -27,6 +29,7 @@ export function ListaMestra({
   linhas: ExercicioListaMestraLinha[];
 }) {
   const [, startTransition] = useTransition();
+  const fb = useFeedback();
 
   function handleChange(
     id: string,
@@ -53,9 +56,23 @@ export function ListaMestra({
           >
             <div className="mb-2 flex justify-end">
               <button
-                onClick={() =>
-                  startTransition(() => excluirLinhaListaMestraAction(linha.id))
-                }
+                onClick={async () => {
+                  const ok = await fb.confirmar({
+                    titulo: "Remover experiência",
+                    descricao: "Essa linha da Lista Mestra será apagada.",
+                    rotuloConfirmar: "Remover",
+                    perigo: true,
+                  });
+                  if (!ok) return;
+                  startTransition(async () => {
+                    try {
+                      await excluirLinhaListaMestraAction(linha.id);
+                      fb.sucesso("Experiência removida");
+                    } catch {
+                      fb.erro("Não foi possível remover");
+                    }
+                  });
+                }}
                 className="text-xs text-rose-600 hover:underline"
               >
                 Remover
@@ -93,7 +110,14 @@ export function ListaMestra({
 
       <button
         onClick={() =>
-          startTransition(() => adicionarLinhaListaMestraAction({}))
+          startTransition(async () => {
+            try {
+              await adicionarLinhaListaMestraAction({});
+              fb.sucesso("Linha adicionada", "Preencha os campos da experiência.");
+            } catch {
+              fb.erro("Não foi possível adicionar");
+            }
+          })
         }
         className="mt-4 rounded-md border px-4 py-2 text-sm hover:bg-brand-soft"
       >

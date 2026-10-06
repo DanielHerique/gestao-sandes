@@ -1,5 +1,7 @@
 "use client";
 
+import { useFeedback } from "@/components/ui/feedback";
+
 import { useState, useTransition } from "react";
 import type {
   ExercicioAutoconhecimento,
@@ -36,12 +38,21 @@ export function Autoconhecimento({
   );
   const [pending, startTransition] = useTransition();
   const statusAnterior: ExercicioStatus = dadosIniciais?.status ?? "nao_iniciado";
+  const fb = useFeedback();
 
   function handleChange(campo: CampoTexto, valor: string) {
     setDados((prev) => ({ ...prev, [campo]: valor }));
   }
 
-  function salvar(status: ExercicioStatus) {
+  async function salvar(status: ExercicioStatus) {
+    if (status === "concluido") {
+      const ok = await fb.confirmar({
+        titulo: "Concluir o Autoconhecimento",
+        descricao: "Você poderá rever as respostas depois. A conclusão é registrada para a consultoria.",
+        rotuloConfirmar: "Concluir exercício",
+      });
+      if (!ok) return;
+    }
     const payload = {
       ...dados,
       status,
@@ -52,8 +63,13 @@ export function Autoconhecimento({
         .slice(0, 10),
     };
     setDados(payload);
-    startTransition(() => {
-      salvarAutoconhecimentoAction(payload, statusAnterior);
+    startTransition(async () => {
+      try {
+        await salvarAutoconhecimentoAction(payload, statusAnterior);
+        fb.sucesso(status === "concluido" ? "Exercício concluído" : "Progresso salvo");
+      } catch {
+        fb.erro("Não foi possível salvar", "Suas respostas continuam na tela.");
+      }
     });
   }
 

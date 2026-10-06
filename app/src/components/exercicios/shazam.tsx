@@ -1,5 +1,7 @@
 "use client";
 
+import { useFeedback } from "@/components/ui/feedback";
+
 import { useState, useTransition } from "react";
 import type { ExercicioShazam, ExercicioStatus } from "@/lib/types/database";
 import { salvarShazamAction } from "@/app/(candidato)/exercicios/actions";
@@ -69,16 +71,30 @@ export function Shazam({
   );
   const [pending, startTransition] = useTransition();
   const statusAnterior: ExercicioStatus = dadosIniciais?.status ?? "nao_iniciado";
+  const fb = useFeedback();
 
   function handleChange(campo: keyof Campo, valor: string) {
     setDados((prev) => ({ ...prev, [campo]: valor }));
   }
 
-  function salvar(status: ExercicioStatus) {
+  async function salvar(status: ExercicioStatus) {
+    if (status === "concluido") {
+      const ok = await fb.confirmar({
+        titulo: "Concluir a Ferramenta Shazam",
+        descricao: "Você poderá rever as respostas depois. A conclusão é registrada para a consultoria.",
+        rotuloConfirmar: "Concluir exercício",
+      });
+      if (!ok) return;
+    }
     const payload = { ...dados, status };
     setDados(payload);
-    startTransition(() => {
-      salvarShazamAction(payload, statusAnterior);
+    startTransition(async () => {
+      try {
+        await salvarShazamAction(payload, statusAnterior);
+        fb.sucesso(status === "concluido" ? "Exercício concluído" : "Progresso salvo");
+      } catch {
+        fb.erro("Não foi possível salvar", "Suas respostas continuam na tela.");
+      }
     });
   }
 

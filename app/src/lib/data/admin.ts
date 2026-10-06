@@ -103,3 +103,143 @@ export function paraLinhasCarteira(carteira: CandidatoResumo[]) {
     entrouEm: c.profile.created_at,
   }));
 }
+
+// ---------- Carteira paginada (filtros e ordenação no banco) ----------
+export interface FiltrosCarteira {
+  busca?: string;
+  plano?: string;
+  situacao?: string;
+  ordem?: string;
+  pagina: number;
+  tamanho: number;
+}
+
+export interface LinhaCarteiraDados {
+  id: string;
+  nome: string;
+  email: string;
+  plano: string | null;
+  candidaturasAtivas: number;
+  totalCandidaturas: number;
+  pontos: number;
+  diasSemAtividade: number | null;
+  documentosPendentes: number;
+  risco: boolean;
+  entrouEm: string;
+}
+
+interface LinhaView {
+  id: string;
+  nome: string;
+  email: string;
+  created_at: string;
+  plano: string | null;
+  total_candidaturas: number;
+  candidaturas_ativas: number;
+  pontos: number;
+  documentos_pendentes: number;
+  ultima_atividade: string | null;
+  risco: boolean;
+}
+
+function deLinhaView(l: LinhaView): LinhaCarteiraDados {
+  return {
+    id: l.id,
+    nome: l.nome,
+    email: l.email,
+    plano: l.plano,
+    candidaturasAtivas: l.candidaturas_ativas,
+    totalCandidaturas: l.total_candidaturas,
+    pontos: l.pontos,
+    diasSemAtividade: diasDesde(l.ultima_atividade),
+    documentosPendentes: l.documentos_pendentes,
+    risco: l.risco,
+    entrouEm: l.created_at,
+  };
+}
+
+export async function carteiraPaginada(
+  f: FiltrosCarteira,
+): Promise<{ linhas: LinhaCarteiraDados[]; total: number }> {
+  const supabase = await createClient();
+  const de = (f.pagina - 1) * f.tamanho;
+
+  let q = supabase.from("carteira_resumo").select("*", { count: "exact" });
+  const busca = f.busca?.trim().replace(/[%,()]/g, " ");
+  if (busca) q = q.or(`nome.ilike.%${busca}%,email.ilike.%${busca}%`);
+  if (f.plano === "sem_plano") q = q.is("plano", null);
+  else if (f.plano) q = q.eq("plano", f.plano);
+  if (f.situacao === "risco") q = q.eq("risco", true);
+  if (f.situacao === "engajado") q = q.eq("risco", false);
+  if (f.situacao === "doc_pendente") q = q.gt("documentos_pendentes", 0);
+  if (f.situacao === "sem_candidaturas") q = q.eq("total_candidaturas", 0);
+
+  if (f.ordem === "pontos") q = q.order("pontos", { ascending: false });
+  else if (f.ordem === "atividade")
+    q = q.order("ultima_atividade", { ascending: true, nullsFirst: true });
+  else if (f.ordem === "entrada") q = q.order("created_at", { ascending: false });
+  else q = q.order("nome", { ascending: true });
+
+  const { data, error, count } = await q.range(de, de + f.tamanho - 1);
+
+  if (!error) {
+    return { linhas: ((data ?? []) as LinhaView[]).map(deLinhaView), total: count ?? 0 };
+  }
+
+  // Alternativa enquanto a migration 0005 não foi aplicada: calcula em memória.
+  const todas = paraLinhasCarteira(await listarCarteira());
+  const termo = f.busca?.trim().toLowerCase();
+  const filtradas = todas.filter((l) => {
+    if (termo && !`${l.nome} ${l.email}`.toLowerCase().includes(termo)) return false;
+    if (f.plano === "sem_plano" && l.plano) return false;
+    if (f.plano && f.plano !== "sem_plano" && l.plano !== f.plano) return false;
+    if (f.situacao === "risco" && !l.risco) return false;
+    if (f.situacao === "engajado" && l.risco) return false;
+    if (f.situacao === "doc_pendente" && l.documentosPendentes === 0) return false;
+    if (f.situacao === "sem_candidaturas" && l.totalCandidaturas > 0) return false;
+    return true;
+  });
+  filtradas.sort((a, b) => {
+    if (f.ordem === "pontos") return b.pontos - a.pontos;
+    if (f.ordem === "atividade") return (b.diasSemAtividade ?? 9999) - (a.diasSemAtividade ?? 9999);
+    if (f.ordem === "entrada") return b.entrouEm.localeCompare(a.entrouEm);
+    return a.nome.localeCompare(b.nome);
+  });
+  return { linhas: filtradas.slice(de, de + f.tamanho), total: filtradas.length };
+}
+
+export async function resumoDaCarteira(): Promise<{
+  total: number;
+  risco: number;
+  comDocumentoPendente: number;
+  emRisco: LinhaCarteiraDados[];
+}> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("carteira_resumo")
+    .select("*")
+    .or("risco.eq.true,documentos_pendentes.gt.0")
+    .order("ultima_atividade", { ascending: true, nullsFirst: true })
+    .limit(200);
+  const { count: total } = await supabase
+    .from("carteira_resumo")
+    .select("id", { count: "exact", head: true });
+
+  if (!error) {
+    const linhas = ((data ?? []) as LinhaView[]).map(deLinhaView);
+    return {
+      total: total ?? 0,
+      risco: linhas.filter((l) => l.risco).length,
+      comDocumentoPendente: linhas.filter((l) => l.documentosPendentes > 0).length,
+      emRisco: linhas.filter((l) => l.risco).slice(0, 8),
+    };
+  }
+
+  const todas = paraLinhasCarteira(await listarCarteira());
+  return {
+    total: todas.length,
+    risco: todas.filter((l) => l.risco).length,
+    comDocumentoPendente: todas.filter((l) => l.documentosPendentes > 0).length,
+    emRisco: todas.filter((l) => l.risco).slice(0, 8),
+  };
+}

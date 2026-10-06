@@ -1,5 +1,7 @@
 "use client";
 
+import { useFeedback } from "@/components/ui/feedback";
+
 import { useState, useTransition } from "react";
 import type {
   ExercicioPdi5w2h,
@@ -45,6 +47,7 @@ export function Pdi({
   );
   const [, startTransition] = useTransition();
   const [pendingStatus, startStatusTransition] = useTransition();
+  const fb = useFeedback();
 
   return (
     <div>
@@ -70,9 +73,23 @@ export function Pdi({
                 </span>
               </span>
               <button
-                onClick={() =>
-                  startTransition(() => excluirPdiMetaAction(meta.id))
-                }
+                onClick={async () => {
+                  const ok = await fb.confirmar({
+                    titulo: "Remover meta",
+                    descricao: `"${meta.competencia}" será removida do seu PDI.`,
+                    rotuloConfirmar: "Remover",
+                    perigo: true,
+                  });
+                  if (!ok) return;
+                  startTransition(async () => {
+                    try {
+                      await excluirPdiMetaAction(meta.id);
+                      fb.sucesso("Meta removida");
+                    } catch {
+                      fb.erro("Não foi possível remover");
+                    }
+                  });
+                }}
                 className="text-xs text-rose-600 hover:underline"
               >
                 Remover
@@ -80,19 +97,19 @@ export function Pdi({
             </li>
           ))}
         </ul>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <input
             value={novaCompetencia}
             onChange={(e) => setNovaCompetencia(e.target.value)}
             placeholder="Competência"
-            className="rounded border px-3 py-1.5 text-sm"
+            className="min-w-0 flex-1 px-3.5 py-2"
           />
           <select
             value={novoPrazo}
             onChange={(e) =>
               setNovoPrazo(e.target.value as "curto" | "medio" | "longo")
             }
-            className="rounded border px-3 py-1.5 text-sm"
+            className="px-3.5 py-2"
           >
             <option value="curto">Curto prazo</option>
             <option value="medio">Médio prazo</option>
@@ -101,9 +118,15 @@ export function Pdi({
           <button
             onClick={() => {
               if (!novaCompetencia.trim()) return;
-              startTransition(() =>
-                adicionarPdiMetaAction(novaCompetencia.trim(), novoPrazo),
-              );
+              const competencia = novaCompetencia.trim();
+              startTransition(async () => {
+                try {
+                  await adicionarPdiMetaAction(competencia, novoPrazo);
+                  fb.sucesso("Meta adicionada", competencia);
+                } catch {
+                  fb.erro("Não foi possível adicionar a meta");
+                }
+              });
               setNovaCompetencia("");
             }}
             className="rounded-md border px-3 py-1.5 text-sm hover:bg-brand-soft"
@@ -124,7 +147,24 @@ export function Pdi({
               <div className="mb-2 flex justify-end">
                 <button
                   onClick={() =>
-                    startTransition(() => excluirPdi5w2hAction(linha.id))
+                    {
+                      fb.confirmar({
+                        titulo: "Remover linha do 5W2H",
+                        descricao: "Essa linha do plano de ação será apagada.",
+                        rotuloConfirmar: "Remover",
+                        perigo: true,
+                      }).then((ok) => {
+                        if (!ok) return;
+                        startTransition(async () => {
+                          try {
+                            await excluirPdi5w2hAction(linha.id);
+                            fb.sucesso("Linha removida");
+                          } catch {
+                            fb.erro("Não foi possível remover");
+                          }
+                        });
+                      });
+                    }
                   }
                   className="text-xs text-rose-600 hover:underline"
                 >
@@ -143,7 +183,16 @@ export function Pdi({
           ))}
         </div>
         <button
-          onClick={() => startTransition(() => adicionarPdi5w2hAction({}))}
+          onClick={() =>
+            startTransition(async () => {
+              try {
+                await adicionarPdi5w2hAction({});
+                fb.sucesso("Linha adicionada ao 5W2H");
+              } catch {
+                fb.erro("Não foi possível adicionar");
+              }
+            })
+          }
           className="mt-3 rounded-md border px-4 py-2 text-sm hover:bg-brand-soft"
         >
           + Adicionar linha 5W2H
@@ -154,9 +203,14 @@ export function Pdi({
         <button
           disabled={pendingStatus}
           onClick={() =>
-            startStatusTransition(() =>
-              atualizarStatusPdiAction("em_andamento"),
-            )
+            startStatusTransition(async () => {
+              try {
+                await atualizarStatusPdiAction("em_andamento");
+                fb.sucesso("PDI marcado como em andamento");
+              } catch {
+                fb.erro("Não foi possível atualizar");
+              }
+            })
           }
           className="rounded-md border px-4 py-2 text-sm hover:bg-brand-soft"
         >
@@ -165,7 +219,23 @@ export function Pdi({
         <button
           disabled={pendingStatus}
           onClick={() =>
-            startStatusTransition(() => atualizarStatusPdiAction("concluido"))
+            fb
+              .confirmar({
+                titulo: "Concluir o PDI",
+                descricao: "A conclusão é registrada para a consultoria.",
+                rotuloConfirmar: "Concluir exercício",
+              })
+              .then((ok) => {
+                if (!ok) return;
+                startStatusTransition(async () => {
+                  try {
+                    await atualizarStatusPdiAction("concluido");
+                    fb.sucesso("Exercício concluído");
+                  } catch {
+                    fb.erro("Não foi possível concluir");
+                  }
+                });
+              })
           }
           className="rounded-md bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700"
         >

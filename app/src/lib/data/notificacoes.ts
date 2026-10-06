@@ -3,16 +3,19 @@ import type { Notificacao, NotificacaoTipo } from "@/lib/types/database";
 
 export async function listarNotificacoes(
   candidatoId: string,
-): Promise<Notificacao[]> {
+  { pagina = 1, tamanho = 10 }: { pagina?: number; tamanho?: number } = {},
+): Promise<{ itens: Notificacao[]; total: number }> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const de = (pagina - 1) * tamanho;
+  const { data, error, count } = await supabase
     .from("notificacoes")
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("candidato_id", candidatoId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(de, de + tamanho - 1);
 
   if (error) throw error;
-  return (data ?? []) as Notificacao[];
+  return { itens: (data ?? []) as Notificacao[], total: count ?? 0 };
 }
 
 export async function marcarComoLida(id: string): Promise<void> {

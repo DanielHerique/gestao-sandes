@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import type { Documento, DocumentoStatus } from "@/lib/types/database";
+import { useFeedback } from "@/components/ui/feedback";
 import {
   confirmarUploadAssinaturaAction,
   obterUrlUploadAssinaturaAction,
@@ -30,30 +31,58 @@ export function DocumentoCard({ documento }: { documento: Documento }) {
   const [pending, startTransition] = useTransition();
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fb = useFeedback();
 
   async function handleVisualizar() {
-    const url = await obterUrlVisualizacaoAction(documento.storage_path);
-    if (url) window.open(url, "_blank");
+    // Abre a aba antes do await, senão o navegador bloqueia o pop-up
+    const aba = window.open("", "_blank");
+    const url = await obterUrlVisualizacaoAction(documento.storage_path).catch(() => null);
+    if (url && aba) {
+      aba.location.href = url;
+    } else {
+      aba?.close();
+      fb.erro("Não foi possível abrir o documento", "Tente novamente em instantes.");
+    }
   }
 
   async function handleUploadAssinado(file: File) {
+    if (file.type !== "application/pdf") {
+      fb.erro("Envie o documento assinado em PDF");
+      return;
+    }
+    const ok = await fb.confirmar({
+      titulo: "Enviar documento assinado",
+      descricao: `"${documento.titulo}" será enviado para a consultoria e marcado como assinado.`,
+      rotuloConfirmar: "Enviar assinado",
+    });
+    if (!ok) return;
+
     setUploading(true);
     try {
       const dadosUpload = await obterUrlUploadAssinaturaAction(documento.id);
-      if (!dadosUpload) return;
+      if (!dadosUpload) throw new Error("sem url");
 
-      await fetch(dadosUpload.signedUrl, { method: "PUT", body: file });
+      const resposta = await fetch(dadosUpload.signedUrl, { method: "PUT", body: file });
+      if (!resposta.ok) throw new Error("upload");
 
-      startTransition(() => {
-        confirmarUploadAssinaturaAction(documento.id, dadosUpload.path);
+      startTransition(async () => {
+        try {
+          await confirmarUploadAssinaturaAction(documento.id, dadosUpload.path);
+          fb.sucesso("Documento enviado", "A consultoria já pode ver a versão assinada.");
+        } catch {
+          fb.erro("O arquivo subiu, mas não foi possível registrar a assinatura");
+        }
       });
+    } catch {
+      fb.erro("Não foi possível enviar o documento", "Tente novamente em instantes.");
     } finally {
       setUploading(false);
+      if (inputRef.current) inputRef.current.value = "";
     }
   }
 
   return (
-    <div className="rounded-lg border bg-surface p-4">
+    <div className="rounded-2xl border bg-surface p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="font-medium">{documento.titulo}</p>
@@ -67,7 +96,7 @@ export function DocumentoCard({ documento }: { documento: Documento }) {
           {documento.status !== "nao_liberado" && (
             <button
               onClick={handleVisualizar}
-              className="rounded border px-3 py-1.5 text-xs hover:bg-brand-soft"
+              className="min-h-10 rounded-xl border px-4 text-sm hover:bg-brand-soft"
             >
               Ver / baixar
             </button>
@@ -89,7 +118,7 @@ export function DocumentoCard({ documento }: { documento: Documento }) {
                 <button
                   disabled={uploading || pending}
                   onClick={() => inputRef.current?.click()}
-                  className="rounded bg-brand px-3 py-1.5 text-xs text-brand-fg hover:bg-brand-hover disabled:opacity-50"
+                  className="min-h-10 rounded-xl bg-brand px-4 text-sm text-brand-fg disabled:opacity-50"
                 >
                   {uploading ? "Enviando..." : "Enviar assinado"}
                 </button>

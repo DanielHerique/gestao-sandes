@@ -63,6 +63,7 @@ ok(await sb.from("prompts_ia").insert([
 ]), "prompts");
 
 // ---------- Template + arquivos ----------
+ok(await sb.from("documentos").delete().not("template_id", "is", null), "limpar documentos de templates");
 ok(await sb.from("documento_templates").delete().neq("id", "00000000-0000-0000-0000-000000000000"), "limpar templates");
 const tplContrato = `templates/seed-contrato-mentoria.pdf`;
 const tplTermo = `templates/seed-termo-confidencialidade.pdf`;
@@ -107,6 +108,9 @@ for (const p of pessoas) {
       candidato_id: id, cargo, empresa, segmento_empresa: segmento, plataforma_envio: plataforma, status,
       data_envio_curriculo: ago(criado).slice(0, 10),
       link_vaga: "https://www.linkedin.com/jobs/", linkedin_empresa: `https://www.linkedin.com/company/${empresa.toLowerCase().replace(/\W/g, "")}`,
+      perfil_recrutador_linkedin: n % 2 === 0
+        ? "https://www.linkedin.com/in/ana-lima-rh\nhttps://www.linkedin.com/in/carlos-mendes-talent\nhttps://www.linkedin.com/in/paula-ribeiro-recrutadora"
+        : "https://www.linkedin.com/in/ana-lima-rh",
       notas_pessoais: status === "entrevista" ? "Entrevista com gestor agendada. Preparar 3 histórias STAR." : null,
       created_at: ago(criado), updated_at: ago(atualizado),
     }).select().single(), "candidatura");

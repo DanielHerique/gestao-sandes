@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Icon } from "@/components/icons";
+import { VerMais } from "@/components/ui/ver-mais";
 import { requireProfile } from "@/lib/auth/session";
 import { carregarInicio } from "@/lib/data/inicio";
 import { totalPontos } from "@/lib/data/pontuacao";
@@ -163,6 +164,7 @@ export default async function InicioPage() {
           <p className="text-sm text-foreground/60">Sua atividade vai aparecer aqui.</p>
         ) : (
           <ol className="relative space-y-5 before:absolute before:bottom-2 before:left-[17px] before:top-2 before:w-px before:bg-line">
+            <VerMais inicial={6} passo={6} rotulo="Ver mais atividades">
             {dados.linhaDoTempo.map((e, i) => (
               <li key={i} className="relative flex gap-4">
                 <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border bg-surface text-brand-strong">
@@ -175,6 +177,7 @@ export default async function InicioPage() {
                 <span className="num shrink-0 pt-1 text-xs text-foreground/45">{dataCurta(e.quando)}</span>
               </li>
             ))}
+            </VerMais>
           </ol>
         )}
       </Cartao>

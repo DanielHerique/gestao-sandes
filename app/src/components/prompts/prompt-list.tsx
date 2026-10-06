@@ -2,18 +2,26 @@
 
 import { useMemo, useState } from "react";
 import type { PromptIA } from "@/lib/types/database";
+import { useFeedback } from "@/components/ui/feedback";
+import { VerMais } from "@/components/ui/ver-mais";
 
 function CopyButton({ texto }: { texto: string }) {
   const [copiado, setCopiado] = useState(false);
+  const fb = useFeedback();
 
   return (
     <button
       onClick={async () => {
-        await navigator.clipboard.writeText(texto);
-        setCopiado(true);
-        setTimeout(() => setCopiado(false), 1500);
+        try {
+          await navigator.clipboard.writeText(texto);
+          setCopiado(true);
+          fb.sucesso("Prompt copiado", "Cole na sua ferramenta de IA.");
+          setTimeout(() => setCopiado(false), 1500);
+        } catch {
+          fb.erro("Não foi possível copiar", "Selecione o texto e copie manualmente.");
+        }
       }}
-      className="rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-brand-soft"
+      className="min-h-10 shrink-0 rounded-xl border px-4 text-xs font-medium hover:bg-brand-soft"
     >
       {copiado ? "Copiado!" : "Copiar"}
     </button>
@@ -58,11 +66,12 @@ export function PromptList({ prompts }: { prompts: PromptIA[] }) {
         </select>
       </div>
 
-      <div className="grid gap-3">
+      <ul className="grid gap-3">
+        <VerMais inicial={8} passo={8}>
         {filtrados.map((prompt) => (
-          <div
+          <li
             key={prompt.id}
-            className="rounded-lg border bg-surface p-4"
+            className="rounded-2xl border bg-surface p-5"
           >
             <div className="mb-2 flex items-start justify-between gap-2">
               <div className="min-w-0">
@@ -86,12 +95,13 @@ export function PromptList({ prompts }: { prompts: PromptIA[] }) {
             <p className="whitespace-pre-wrap break-words text-sm text-foreground/70">
               {prompt.texto_prompt}
             </p>
-          </div>
+          </li>
         ))}
+        </VerMais>
         {filtrados.length === 0 && (
-          <p className="text-sm text-foreground/60">Nenhum prompt encontrado.</p>
+          <li className="list-none text-sm text-foreground/60">Nenhum prompt encontrado.</li>
         )}
-      </div>
+      </ul>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   LIMITE_DIARIO_POR_ACAO,
   PONTOS_POR_ACAO,
@@ -14,10 +15,27 @@ export async function listarEventosPontuacao(
     .from("pontuacao_eventos")
     .select("*")
     .eq("candidato_id", candidatoId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(100);
 
   if (error) throw error;
   return (data ?? []) as PontuacaoEvento[];
+}
+
+export async function listarEventosPaginados(
+  candidatoId: string,
+  { pagina = 1, tamanho = 10 }: { pagina?: number; tamanho?: number } = {},
+): Promise<{ itens: PontuacaoEvento[]; total: number }> {
+  const supabase = await createClient();
+  const de = (pagina - 1) * tamanho;
+  const { data, error, count } = await supabase
+    .from("pontuacao_eventos")
+    .select("*", { count: "exact" })
+    .eq("candidato_id", candidatoId)
+    .order("created_at", { ascending: false })
+    .range(de, de + tamanho - 1);
+  if (error) throw error;
+  return { itens: (data ?? []) as PontuacaoEvento[], total: count ?? 0 };
 }
 
 export async function totalPontos(candidatoId: string): Promise<number> {
@@ -40,8 +58,25 @@ export async function registrarEventoPontuacao(
   candidatoId: string,
   acao: AcaoPontuavel,
   referencia?: { tipo: string; id: string },
+  opcoes?: { unico?: boolean },
 ): Promise<PontuacaoEvento | null> {
-  const supabase = await createClient();
+  // A regra de segurança do banco só deixa o sistema gravar pontos. Quem chama
+  // (server action) já validou o usuário; aqui gravamos com a chave de serviço.
+  const supabase = createAdminClient();
+
+  // Ações "únicas": a mesma ação sobre a mesma referência pontua só uma vez
+  // (evita ganhar pontos arrastando um card de um lado para o outro).
+  if (opcoes?.unico && referencia) {
+    const { count: jaPontuou, error: unicoError } = await supabase
+      .from("pontuacao_eventos")
+      .select("id", { count: "exact", head: true })
+      .eq("candidato_id", candidatoId)
+      .eq("acao", acao)
+      .eq("referencia_tipo", referencia.tipo)
+      .eq("referencia_id", referencia.id);
+    if (unicoError) throw unicoError;
+    if ((jaPontuou ?? 0) > 0) return null;
+  }
 
   const limite = LIMITE_DIARIO_POR_ACAO[acao];
   if (limite !== undefined) {

@@ -52,4 +52,5 @@ export async function enviarTemplateEmLoteAction(
   await requireAdmin();
   await enviarTemplateEmLote(templateId, candidatoIds);
   revalidatePath("/admin/documentos");
+  return { enviados: candidatoIds.length };
 }

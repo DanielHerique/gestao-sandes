@@ -93,4 +93,16 @@ export async function enviarTemplateEmLote(
 
   const { error } = await supabase.from("documentos").insert(inserts);
   if (error) throw error;
+
+  // Avisa cada candidato na central de notificações
+  await admin.from("notificacoes").insert(
+    candidatoIds.map((candidatoId) => ({
+      candidato_id: candidatoId,
+      tipo: "institucional" as const,
+      titulo: template.requer_assinatura
+        ? "Novo documento para assinar"
+        : "Novo documento liberado",
+      mensagem: `"${template.titulo}" está disponível na aba Documentos.`,
+    })),
+  );
 }

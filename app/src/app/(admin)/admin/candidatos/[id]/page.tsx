@@ -14,6 +14,7 @@ import {
 import { nivelAtual } from "@/lib/gamification/pontos";
 import { AtribuirPlano } from "@/components/admin/atribuir-plano";
 import { Anotacoes } from "@/components/admin/anotacoes";
+import { VerMais } from "@/components/ui/ver-mais";
 import { RelatorioButton } from "@/components/admin/relatorio-button";
 
 export default async function CandidatoDetalhePage({
@@ -112,6 +113,7 @@ export default async function CandidatoDetalhePage({
             Candidaturas ({candidaturas.length})
           </h2>
           <ul className="space-y-2">
+            <VerMais inicial={5} passo={10}>
             {candidaturas.map((c) => (
               <li
                 key={c.id}
@@ -125,6 +127,7 @@ export default async function CandidatoDetalhePage({
                 </p>
               </li>
             ))}
+            </VerMais>
             {candidaturas.length === 0 && (
               <p className="text-sm text-foreground/60">Nenhuma candidatura.</p>
             )}
@@ -150,12 +153,14 @@ export default async function CandidatoDetalhePage({
             Documentos ({documentos.length})
           </h2>
           <ul className="space-y-2">
+            <VerMais inicial={5} passo={10}>
             {documentos.map((d) => (
               <li key={d.id} className="flex items-center justify-between gap-2 rounded-lg border bg-surface p-3 text-sm">
                 <span className="min-w-0 truncate">{d.titulo}</span>
                 <span className="shrink-0 text-foreground/60">{ROTULO_DOC[d.status] ?? d.status}</span>
               </li>
             ))}
+            </VerMais>
             {documentos.length === 0 && (
               <p className="text-sm text-foreground/60">Nenhum documento enviado.</p>
             )}
@@ -167,6 +172,7 @@ export default async function CandidatoDetalhePage({
             Análises de currículo ({analises.length})
           </h2>
           <ul className="space-y-2">
+            <VerMais inicial={5} passo={10}>
             {analises.map((a) => (
               <li
                 key={a.id}
@@ -176,6 +182,7 @@ export default async function CandidatoDetalhePage({
                 {new Date(a.created_at).toLocaleDateString("pt-BR")}
               </li>
             ))}
+            </VerMais>
             {analises.length === 0 && (
               <p className="text-sm text-foreground/60">Nenhuma análise.</p>
             )}
@@ -187,7 +194,8 @@ export default async function CandidatoDetalhePage({
             Linha do tempo de pontuação
           </h2>
           <ul className="space-y-1">
-            {eventos.slice(0, 10).map((e) => (
+            <VerMais inicial={6} passo={10}>
+            {eventos.map((e) => (
               <li key={e.id} className="text-sm">
                 <span className="text-foreground/60">
                   {new Date(e.created_at).toLocaleDateString("pt-BR")}
@@ -195,6 +203,7 @@ export default async function CandidatoDetalhePage({
                 — {e.acao} (+{e.pontos})
               </li>
             ))}
+            </VerMais>
             {eventos.length === 0 && (
               <p className="text-sm text-foreground/60">Sem eventos ainda.</p>
             )}

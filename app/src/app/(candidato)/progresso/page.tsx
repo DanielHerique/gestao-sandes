@@ -1,5 +1,6 @@
 import { requireProfile } from "@/lib/auth/session";
-import { listarEventosPontuacao, totalPontos } from "@/lib/data/pontuacao";
+import { listarEventosPaginados, totalPontos } from "@/lib/data/pontuacao";
+import { Paginacao, lerPagina } from "@/components/ui/paginacao";
 import {
   NIVEIS,
   nivelAtual,
@@ -21,12 +22,20 @@ const ACAO_LABEL: Record<string, string> = {
   sequencia_5_dias_bonus: "Bônus de constância",
 };
 
-export default async function ProgressoPage() {
+const TAMANHO = 10;
+
+export default async function ProgressoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ pagina?: string }>;
+}) {
   const profile = await requireProfile();
-  const [pontos, eventos] = await Promise.all([
+  const pagina = lerPagina((await searchParams).pagina);
+  const [pontos, { itens: eventos, total: totalEventos }] = await Promise.all([
     totalPontos(profile.id),
-    listarEventosPontuacao(profile.id),
+    listarEventosPaginados(profile.id, { pagina, tamanho: TAMANHO }),
   ]);
+  const totalPaginas = Math.max(1, Math.ceil(totalEventos / TAMANHO));
 
   const nivel = nivelAtual(pontos);
   const proximo = proximoNivel(pontos);
@@ -116,6 +125,7 @@ export default async function ProgressoPage() {
             ))}
           </ul>
         )}
+        <Paginacao pagina={pagina} totalPaginas={totalPaginas} caminho="/progresso" />
       </div>
     </div>
   );

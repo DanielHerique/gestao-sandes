@@ -1,118 +1,91 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
+import { Icon } from "@/components/icons";
+import { Modal } from "@/components/ui/modal";
+import { useFeedback } from "@/components/ui/feedback";
 import { criarCandidaturaAction } from "@/app/(candidato)/candidaturas/actions";
+import { juntarPerfisRecrutadores } from "@/lib/candidaturas-util";
+import {
+  CANDIDATURA_VAZIA,
+  CamposCandidatura,
+  type DadosCandidatura,
+} from "./campos-candidatura";
 
 export function NovaCandidaturaForm() {
   const [aberto, setAberto] = useState(false);
+  const [dados, setDados] = useState<DadosCandidatura>(CANDIDATURA_VAZIA);
   const [pending, startTransition] = useTransition();
-  const formRef = useRef<HTMLFormElement>(null);
+  const fb = useFeedback();
 
-  function handleSubmit(formData: FormData) {
-    const cargo = String(formData.get("cargo") ?? "").trim();
-    const empresa = String(formData.get("empresa") ?? "").trim();
-    if (!cargo || !empresa) return;
+  function fechar() {
+    setAberto(false);
+    setDados(CANDIDATURA_VAZIA);
+  }
 
+  function salvar(e: React.FormEvent) {
+    e.preventDefault();
+    if (!dados.cargo.trim() || !dados.empresa.trim()) return;
     startTransition(async () => {
-      await criarCandidaturaAction({
-        cargo,
-        empresa,
-        segmento_empresa: String(formData.get("segmento_empresa") ?? "") || undefined,
-        data_envio_curriculo:
-          String(formData.get("data_envio_curriculo") ?? "") || undefined,
-        link_vaga: String(formData.get("link_vaga") ?? "") || undefined,
-        linkedin_empresa: String(formData.get("linkedin_empresa") ?? "") || undefined,
-        plataforma_envio: String(formData.get("plataforma_envio") ?? "") || undefined,
-        perfil_recrutador_linkedin:
-          String(formData.get("perfil_recrutador_linkedin") ?? "") || undefined,
-        notas_pessoais: String(formData.get("notas_pessoais") ?? "") || undefined,
-      });
-      formRef.current?.reset();
-      setAberto(false);
+      try {
+        const r = await criarCandidaturaAction({
+          cargo: dados.cargo.trim(),
+          empresa: dados.empresa.trim(),
+          segmento_empresa: dados.segmento_empresa.trim() || undefined,
+          data_envio_curriculo: dados.data_envio_curriculo || undefined,
+          link_vaga: dados.link_vaga.trim() || undefined,
+          linkedin_empresa: dados.linkedin_empresa.trim() || undefined,
+          plataforma_envio: dados.plataforma_envio.trim() || undefined,
+          perfil_recrutador_linkedin: juntarPerfisRecrutadores(dados.perfis),
+          notas_pessoais: dados.notas_pessoais.trim() || undefined,
+        });
+        fb.sucesso(
+          "Candidatura registrada",
+          r.pontos > 0 ? `+${r.pontos} pontos` : `${dados.cargo.trim()} · ${dados.empresa.trim()}`,
+        );
+        fechar();
+      } catch {
+        fb.erro("Não foi possível salvar", "Tente novamente em instantes.");
+      }
     });
   }
 
-  if (!aberto) {
-    return (
-      <button
-        onClick={() => setAberto(true)}
-        className="min-h-11 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-fg hover:bg-brand-hover"
-      >
-        + Nova candidatura
-      </button>
-    );
-  }
-
   return (
-    <form
-      ref={formRef}
-      action={handleSubmit}
-      className="mb-4 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2 rounded-lg border bg-surface p-4"
-    >
-      <input
-        name="cargo"
-        placeholder="Cargo *"
-        required
-        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
-      />
-      <input
-        name="empresa"
-        placeholder="Empresa *"
-        required
-        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
-      />
-      <input
-        name="segmento_empresa"
-        placeholder="Segmento da empresa"
-        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
-      />
-      <input
-        name="data_envio_curriculo"
-        type="date"
-        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
-      />
-      <input
-        name="link_vaga"
-        placeholder="Link da vaga"
-        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
-      />
-      <input
-        name="linkedin_empresa"
-        placeholder="LinkedIn da empresa"
-        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
-      />
-      <input
-        name="plataforma_envio"
-        placeholder="Plataforma de envio (LinkedIn, Gupy...)"
-        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
-      />
-      <input
-        name="perfil_recrutador_linkedin"
-        placeholder="Perfil do recrutador (LinkedIn)"
-        className="col-span-1 min-h-11 rounded-lg border px-3 py-2 text-base sm:text-sm"
-      />
-      <textarea
-        name="notas_pessoais"
-        placeholder="Notas pessoais"
-        className="col-span-full rounded border px-3 py-2 text-sm"
-        rows={2}
-      />
-      <div className="col-span-full flex gap-2">
-        <button
-          type="submit"
-          disabled={pending}
-          className="min-h-11 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-fg hover:bg-brand-hover disabled:opacity-50"
-        >
-          {pending ? "Salvando..." : "Salvar"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setAberto(false)}
-          className="min-h-11 rounded-lg border px-4 py-2 text-sm"
-        >
-          Cancelar
-        </button>
-      </div>
-    </form>
+    <>
+      <button
+        type="button"
+        onClick={() => setAberto(true)}
+        className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-brand px-5 py-2 text-sm text-brand-fg"
+      >
+        <Icon name="mais" className="h-4 w-4" />
+        Nova candidatura
+      </button>
+
+      <Modal
+        aberto={aberto}
+        onFechar={fechar}
+        titulo="Nova candidatura"
+        subtitulo="Só cargo e empresa são obrigatórios. O resto você pode completar depois."
+        rodape={
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button type="button" onClick={fechar} className="min-h-11 rounded-xl border px-5 text-sm hover:bg-brand-soft">
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              form="form-nova-candidatura"
+              disabled={pending || !dados.cargo.trim() || !dados.empresa.trim()}
+              className="min-h-11 rounded-xl bg-brand px-6 text-sm text-brand-fg disabled:opacity-50"
+            >
+              {pending ? "Salvando..." : "Salvar candidatura"}
+            </button>
+          </div>
+        }
+      >
+        <form id="form-nova-candidatura" onSubmit={salvar}>
+          <CamposCandidatura valor={dados} onChange={setDados} />
+        </form>
+      </Modal>
+    </>
   );
 }

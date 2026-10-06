@@ -17,6 +17,11 @@ const PATHS: Record<string, React.ReactNode> = {
   medalha: <><circle cx="12" cy="9" r="5" /><path d="m9 13.5-1.5 7L12 18l4.5 2.5-1.5-7" /></>,
   cadeado: <><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></>,
   estrela: <><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9 6.8 19.7l1-5.9L3.5 9.7l5.9-.8z" /></>,
+  check: <><path d="m5 12.5 4.5 4.5L19 7.5" /></>,
+  olho: <><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" /><circle cx="12" cy="12" r="3" /></>,
+  olhoFechado: <><path d="M3 3l18 18" /><path d="M10.6 5.7A9.6 9.6 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a16 16 0 0 1-3.2 3.9M6.4 6.9A16 16 0 0 0 2.5 12S6 18.5 12 18.5a9.5 9.5 0 0 0 4-.9" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></>,
+  mais: <><path d="M12 5v14M5 12h14" /></>,
+  lixeira: <><path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13" /></>,
   seta: <><path d="M5 12h14M13 6l6 6-6 6" /></>,
 };
 
