@@ -27,13 +27,13 @@ import {
 } from "@/app/(candidato)/candidaturas/actions";
 import { DetalheCandidatura } from "./detalhe-candidatura";
 
-const COLUNAS: CandidaturaStatus[] = ["indefinido", "entrevista", "fechada", "retorno_negativo"];
+const COLUNAS: CandidaturaStatus[] = ["em_andamento", "entrevistas", "aprovado", "reprovado"];
 
 const COLUNA_COR: Record<CandidaturaStatus, string> = {
-  indefinido: "bg-slate-400",
-  entrevista: "bg-amber-500",
-  fechada: "bg-emerald-500",
-  retorno_negativo: "bg-rose-500",
+  em_andamento: "bg-ink-2",
+  entrevistas: "bg-brand",
+  aprovado: "bg-success",
+  reprovado: "bg-danger",
 };
 
 type ItemChecklist = keyof typeof CHECKLIST_ITEM_LABELS;
@@ -95,7 +95,7 @@ function CartaoCandidatura({
       <div className="mt-3 flex items-center gap-2">
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
           <div
-            className="h-full rounded-full bg-emerald-500"
+            className="h-full rounded-full bg-success"
             style={{ width: `${(concluidos / ITENS.length) * 100}%` }}
           />
         </div>
@@ -127,9 +127,15 @@ function CartaoCandidatura({
                   type="checkbox"
                   checked={checklist?.[item] ?? false}
                   onChange={(e) => onToggleChecklist(item, e.target.checked)}
+                  disabled={item === "indicacao_perfil"}
                   className="mt-0.5 shrink-0"
                 />
-                <span>{CHECKLIST_ITEM_LABELS[item]}</span>
+                <span>
+                  {CHECKLIST_ITEM_LABELS[item]}
+                  {item === "indicacao_perfil" && !checklist?.[item] && (
+                    <span className="block text-foreground/50">Marcado pela mentora após a indicação</span>
+                  )}
+                </span>
               </label>
             </li>
           ))}
@@ -186,7 +192,7 @@ export function KanbanCandidaturas({
   const [origem, setOrigem] = useState(candidaturasIniciais);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [aberta, setAberta] = useState<string | null>(null);
-  const [abaCelular, setAbaCelular] = useState<CandidaturaStatus>("indefinido");
+  const [abaCelular, setAbaCelular] = useState<CandidaturaStatus>("em_andamento");
   const [, startTransition] = useTransition();
   const fb = useFeedback();
 

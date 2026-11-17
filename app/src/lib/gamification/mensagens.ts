@@ -22,7 +22,7 @@ export type SituacaoMensagem =
 
 export const MENSAGENS_SISTEMA: Record<SituacaoMensagem, string> = {
   primeiro_acesso:
-    "Vamos entender seu momento e escolher um próximo passo possível. Leva cerca de cinco minutos.",
+    "Vamos entender o seu momento e escolher um próximo passo possível.",
   missao_concluida:
     "Você transformou uma experiência em evidência. Isso fortalece sua narrativa profissional.",
   ritmo_mantido:

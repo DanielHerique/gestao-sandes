@@ -20,9 +20,9 @@ const campo = "min-h-10 w-full rounded-xl border bg-surface px-3 text-sm";
 
 function Selo({ children, tom }: { children: React.ReactNode; tom: "risco" | "ok" | "doc" }) {
   const cores = {
-    risco: "bg-rose-500/12 text-rose-700 dark:text-rose-300",
-    ok: "bg-emerald-500/12 text-emerald-700 dark:text-emerald-300",
-    doc: "bg-amber-500/15 text-amber-800 dark:text-amber-300",
+    risco: "bg-danger-soft text-danger",
+    ok: "bg-success-soft text-success",
+    doc: "bg-brand-soft text-brand-strong",
   }[tom];
   return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${cores}`}>{children}</span>;
 }
@@ -134,7 +134,7 @@ export function CarteiraComFiltros({
                     {[
                       [String(l.candidaturasAtivas), "ativas"],
                       [String(l.pontos), "pontos"],
-                      [l.diasSemAtividade === null ? "—" : `${l.diasSemAtividade}d`, "parado"],
+                      [l.diasSemAtividade === null ? "Sem dados" : `${l.diasSemAtividade}d`, "parado"],
                     ].map(([v, r]) => (
                       <div key={r} className="rounded-xl bg-background p-2">
                         <p className="num font-display text-lg font-semibold">{v}</p>
@@ -170,11 +170,11 @@ export function CarteiraComFiltros({
                       <p className="truncate text-xs text-foreground/55">{l.email}</p>
                     </td>
                     <td className="truncate px-4 py-3">
-                      {l.plano ? PLANO_LABELS[l.plano as keyof typeof PLANO_LABELS] : "—"}
+                      {l.plano ? PLANO_LABELS[l.plano as keyof typeof PLANO_LABELS] : "Sem plano"}
                     </td>
                     <td className="num px-4 py-3">{l.candidaturasAtivas}</td>
                     <td className="num px-4 py-3">{l.pontos}</td>
-                    <td className="px-4 py-3">{l.diasSemAtividade === null ? "—" : `${l.diasSemAtividade}d atrás`}</td>
+                    <td className="px-4 py-3">{l.diasSemAtividade === null ? "Sem dados" : `${l.diasSemAtividade}d atrás`}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
                         {l.risco ? <Selo tom="risco">Risco</Selo> : <Selo tom="ok">Engajado</Selo>}

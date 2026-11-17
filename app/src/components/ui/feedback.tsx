@@ -99,7 +99,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
           >
             <span
               className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${
-                t.tipo === "erro" ? "bg-rose-500 text-white" : "bg-brand text-brand-fg"
+                t.tipo === "erro" ? "bg-danger text-ink-fg" : "bg-brand text-brand-fg"
               }`}
             >
               <Icon name={t.tipo === "erro" ? "fechar" : "check"} className="h-3.5 w-3.5" />
@@ -162,7 +162,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
                 disabled={!liberado}
                 onClick={() => fechar(true)}
                 className={`min-h-11 rounded-xl px-5 text-sm font-semibold disabled:opacity-40 ${
-                  dialogo.perigo ? "bg-rose-600 text-white" : "bg-brand text-brand-fg"
+                  dialogo.perigo ? "bg-danger text-ink-fg" : "bg-brand text-brand-fg"
                 }`}
               >
                 {dialogo.rotuloConfirmar ?? "Confirmar"}

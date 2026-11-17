@@ -1,153 +1,178 @@
 @import "tailwindcss";
 
-/* Identidade Sandes: grafite profundo + ouro (do logo), sobre fundo neutro claro.
-   Menu lateral escuro nos dois temas; conteúdo em cartões brancos com sombra suave. */
+/* Design system Sandes v1.0 (docs/DESIGN_SYSTEM.md).
+   Camada 1: primitivos. Só este arquivo usa os valores crus. */
 :root {
-  --background: #f4f4f1;
-  --foreground: #1b1a17;
-  --surface: #ffffff;
-  --line: #e7e5de;
-  --brand: #f2ac0a;
-  --brand-2: #dc9500;
-  --brand-hover: #e29d00;
-  --brand-fg: #1b1a17;
-  --brand-strong: #8c5f00;
-  --brand-soft: #fcf1d3;
-  --ink: #16150f;
-  --ink-2: #211f18;
-  --ink-fg: #f3efe5;
-  --ink-muted: #a8a293;
-  --shadow-card: 0 1px 2px rgba(27, 26, 23, 0.04), 0 8px 24px -12px rgba(27, 26, 23, 0.12);
-  --shadow-lift: 0 2px 4px rgba(27, 26, 23, 0.05), 0 16px 32px -14px rgba(27, 26, 23, 0.22);
+  --amber-500: #ff9800;
+  --amber-200: #ffd580;
+  --amber-100: #fff0d1;
+  --amber-700: #9e6400;
+  --charcoal-900: #1f2429;
+  --graphite-800: #2e353c;
+  --gray-600: #585f63;
+  --gray-200: #e6e7e8;
+  --mist-100: #f1f2f3;
+  --offwhite-50: #f7f7f4;
+  --white: #ffffff;
+  --success-700: #2f6f3e;
+  --success-100: #e7f3ea;
+  --error-700: #b3261e;
+  --error-100: #fde0e0;
+  --info-700: #1a5fb4;
+  --info-100: #e3effd;
+
+  /* Camada 2: tokens (cor por papel, espaço, raio, sombra) */
+  --color-bg-page: var(--offwhite-50);
+  --color-bg-surface: var(--white);
+  --color-bg-neutral: var(--mist-100);
+  --color-bg-brand: var(--amber-500);
+  --color-bg-brand-soft: var(--amber-100);
+  --color-bg-brand-premium: var(--amber-200);
+  --color-bg-inverse: var(--charcoal-900);
+  --color-bg-inverse-2: var(--graphite-800);
+  --color-text-primary: var(--charcoal-900);
+  --color-text-secondary: var(--gray-600);
+  --color-text-on-brand: var(--charcoal-900);
+  --color-text-on-inverse: var(--white);
+  --color-text-brand: var(--amber-700);
+  --color-border-hairline: var(--gray-200);
+  --color-focus: var(--charcoal-900);
+
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-64: 64px;
+  --spacing-96: 96px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  --shadow-float: 0 4px 16px -4px rgba(31, 36, 41, 0.16);
+  --shadow-overlay: 0 16px 40px -8px rgba(31, 36, 41, 0.28);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-brand: var(--brand);
-  --color-brand-hover: var(--brand-hover);
-  --color-brand-fg: var(--brand-fg);
-  --color-brand-strong: var(--brand-strong);
-  --color-brand-soft: var(--brand-soft);
-  --color-surface: var(--surface);
-  --color-line: var(--line);
-  --color-ink: var(--ink);
-  --color-ink-2: var(--ink-2);
-  --color-ink-fg: var(--ink-fg);
-  --color-ink-muted: var(--ink-muted);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--color-bg-page);
+  --color-foreground: var(--color-text-primary);
+  --color-surface: var(--color-bg-surface);
+  --color-neutral: var(--color-bg-neutral);
+  --color-line: var(--color-border-hairline);
+  --color-brand: var(--color-bg-brand);
+  --color-brand-fg: var(--color-text-on-brand);
+  --color-brand-strong: var(--color-text-brand);
+  --color-brand-soft: var(--color-bg-brand-soft);
+  --color-premium: var(--color-bg-brand-premium);
+  --color-ink: var(--color-bg-inverse);
+  --color-ink-2: var(--color-bg-inverse-2);
+  --color-ink-fg: var(--color-text-on-inverse);
+  --color-ink-muted: color-mix(in srgb, var(--mist-100) 68%, var(--charcoal-900));
+  --color-success: var(--success-700);
+  --color-success-soft: var(--success-100);
+  --color-danger: var(--error-700);
+  --color-danger-soft: var(--error-100);
+  --color-info: var(--info-700);
+  --color-info-soft: var(--info-100);
+  --font-sans: var(--font-asap);
+  --font-display: var(--font-asap);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #100f0d;
-    --foreground: #f2efe8;
-    --surface: #1a1915;
-    --line: #2d2b25;
-    --brand-fg: #1b1a17;
-    --brand-strong: #ffc94d;
-    --brand-soft: #2c2410;
-    --ink: #0b0a08;
-    --ink-2: #181712;
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
-    --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 16px 32px -14px rgba(0, 0, 0, 0.7);
-  }
-}
-
+/* Tipografia: Asap em tudo, pesos 400, 600 e 700 */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
-  font-size: 15px;
-  line-height: 1.55;
-  letter-spacing: -0.003em;
+  background: var(--color-bg-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-asap), system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2 { font-family: var(--font-display), Georgia, serif; letter-spacing: -0.02em; font-weight: 600; }
-h1 { text-wrap: balance; }
-.font-display { font-family: var(--font-display), Georgia, serif; letter-spacing: -0.02em; }
-.eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand-strong); }
+h1 { font-size: 32px; line-height: 38px; font-weight: 700; text-wrap: balance; }
+h2, h3 { font-weight: 600; }
+.font-display { font-family: var(--font-asap), system-ui, sans-serif; font-weight: 700; }
+.eyebrow { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--color-text-brand); }
 .num { font-variant-numeric: tabular-nums; }
 
-/* Bordas e campos seguem a paleta */
-*, ::before, ::after { border-color: var(--line); }
+/* Cores de texto de apoio vêm do token secundário */
+.text-foreground\/50, .text-foreground\/55, .text-foreground\/60 { color: var(--color-text-secondary); }
 
-/* Cartões: superfície branca, borda fina e sombra suave */
+*, ::before, ::after { border-color: var(--color-border-hairline); }
+
+/* Raios: cartões lg, campos e linhas md, botões e filtros em pílula */
+.rounded-3xl, .rounded-2xl { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-md); }
+button[class*="rounded-xl"][class*="px-"],
+a[class*="rounded-xl"][class*="px-"][class*="min-h-"] {
+  border-radius: var(--radius-full);
+}
+.rounded-full { border-radius: var(--radius-full); }
+
+/* Cartões: borda hairline em repouso, sombra flutuante só no hover de cartão clicável */
 .bg-surface.border,
-.bg-surface[class*="rounded"] {
-  box-shadow: var(--shadow-card);
-  border-color: var(--line);
-}
-a.bg-surface, button.bg-surface { transition: box-shadow .2s, transform .2s, border-color .2s; }
-a.bg-surface:hover { box-shadow: var(--shadow-lift); transform: translateY(-1px); }
+.bg-surface[class*="rounded"] { border-color: var(--color-border-hairline); box-shadow: none; }
+a.bg-surface, button.bg-surface { transition: box-shadow .2s, border-color .2s; }
+a.bg-surface:hover { box-shadow: var(--shadow-float); }
 
-/* Botão principal: degradê dourado com sombra */
-.bg-brand {
-  background-image: linear-gradient(180deg, var(--brand) 0%, var(--brand-2) 100%);
-}
+/* Botão principal: âmbar chapado com texto carvão */
+.bg-brand { background-image: none; }
 button.bg-brand, a.bg-brand {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 6px 14px -6px rgba(220, 149, 0, 0.7);
   font-weight: 600;
-  transition: transform .15s, box-shadow .15s, filter .15s;
+  transition: filter .15s;
 }
-button.bg-brand:hover, a.bg-brand:hover { filter: brightness(1.04); transform: translateY(-1px); }
-button.bg-brand:active { transform: translateY(0); }
+button.bg-brand:hover, a.bg-brand:hover { filter: brightness(0.95); }
 button:disabled { cursor: not-allowed; }
 
-/* Campos */
+/* Botões de texto com altura mínima de 48 px */
+button[class*="min-h-11"], a[class*="min-h-11"] { min-height: 3rem; }
+button { font-weight: 600; }
+
+/* Campos: rótulo fica acima (ver Campo); borda hairline, foco visível em carvão */
 input, select, textarea {
-  border: 1px solid color-mix(in srgb, var(--foreground) 16%, var(--line));
-  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--color-text-primary) 28%, var(--color-border-hairline));
+  background: var(--color-bg-surface);
   transition: border-color .15s, box-shadow .15s;
 }
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 28%, transparent);
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 2px var(--color-focus);
 }
-input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--foreground) 40%, transparent); }
+input::placeholder, textarea::placeholder { color: var(--color-text-secondary); opacity: .8; }
 
-/* Campos confortáveis no toque (16px evita zoom automático no iOS) */
 input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 select,
 textarea {
   font-size: 16px;
-  border-radius: 0.7rem;
-  min-height: 2.75rem;
+  border-radius: var(--radius-md);
+  min-height: 3rem;
 }
 textarea { min-height: 5rem; }
-@media (min-width: 640px) {
-  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-  select,
-  textarea { font-size: 14px; min-height: 2.5rem; }
-}
-input[type="checkbox"] { accent-color: var(--brand); width: 1.1rem; height: 1.1rem; }
+input[type="checkbox"] { accent-color: var(--amber-500); width: 1.25rem; height: 1.25rem; }
 input[type="file"]::file-selector-button {
-  margin-right: 0.75rem; border: 1px solid var(--line); background: var(--background);
-  color: var(--foreground); border-radius: 0.6rem; padding: 0.45rem 0.8rem; cursor: pointer;
+  margin-right: 0.75rem; border: 1px solid var(--color-text-primary); background: var(--color-bg-surface);
+  color: var(--color-text-primary); border-radius: var(--radius-full); padding: 0.5rem 1rem; cursor: pointer; font-weight: 600;
 }
 button { cursor: pointer; }
 button, [role="button"], summary { touch-action: manipulation; }
-:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 
-@media (max-width: 639px) {
-  button:not([aria-label]) { min-height: 2.75rem; }
-}
-
-::selection { background: color-mix(in srgb, var(--brand) 40%, transparent); }
+::selection { background: color-mix(in srgb, var(--amber-500) 40%, transparent); }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
 
-/* Títulos pequenos de seção: rótulo em caixa alta, sem serifa */
+/* Títulos pequenos de seção: Small strong, sem caixa alta */
 h2[class*="text-sm"], h2[class*="text-xs"], h3[class*="text-sm"] {
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
-  font-size: 11px;
+  font-size: 14px;
+  line-height: 20px;
   font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  color: var(--color-text-secondary);
 }
 
 @keyframes toast-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }

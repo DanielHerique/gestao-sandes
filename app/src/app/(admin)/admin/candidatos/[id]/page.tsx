@@ -12,6 +12,7 @@ import {
   type Profile,
 } from "@/lib/types/database";
 import { nivelAtual } from "@/lib/gamification/pontos";
+import { carregarNiveis } from "@/lib/gamification/regras";
 import { AtribuirPlano } from "@/components/admin/atribuir-plano";
 import { Anotacoes } from "@/components/admin/anotacoes";
 import { VerMais } from "@/components/ui/ver-mais";
@@ -72,7 +73,7 @@ export default async function CandidatoDetalhePage({
     vencido: "Vencido",
   };
 
-  const nivel = nivelAtual(pontos);
+  const nivel = nivelAtual(pontos, await carregarNiveis());
   const docsPendentes = documentos.filter(
     (d) => d.status === "pendente_assinatura",
   );
@@ -120,7 +121,7 @@ export default async function CandidatoDetalhePage({
                 className="rounded-lg border bg-surface p-3 text-sm"
               >
                 <p className="font-medium">
-                  {c.cargo} — {c.empresa}
+                  {c.cargo} · {c.empresa}
                 </p>
                 <p className="text-xs text-foreground/60">
                   {CANDIDATURA_STATUS_LABELS[c.status]}
@@ -178,7 +179,7 @@ export default async function CandidatoDetalhePage({
                 key={a.id}
                 className="rounded-lg border bg-surface p-3 text-sm"
               >
-                {a.sucesso ? `Score ${a.score_geral}` : "Falha na análise"} —{" "}
+                {a.sucesso ? `Score ${a.score_geral}` : "Falha na análise"} ·{" "}
                 {new Date(a.created_at).toLocaleDateString("pt-BR")}
               </li>
             ))}
@@ -200,7 +201,7 @@ export default async function CandidatoDetalhePage({
                 <span className="text-foreground/60">
                   {new Date(e.created_at).toLocaleDateString("pt-BR")}
                 </span>{" "}
-                — {e.acao} (+{e.pontos})
+                · {e.acao} (+{e.pontos})
               </li>
             ))}
             </VerMais>

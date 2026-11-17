@@ -5,6 +5,7 @@ import { requireProfile } from "@/lib/auth/session";
 import { carregarInicio } from "@/lib/data/inicio";
 import { totalPontos } from "@/lib/data/pontuacao";
 import { nivelAtual, pontosParaProximoNivel, proximoNivel } from "@/lib/gamification/pontos";
+import { carregarNiveis } from "@/lib/gamification/regras";
 import { MENSAGENS_SISTEMA } from "@/lib/gamification/mensagens";
 
 const ICONE_TL: Record<string, string> = {
@@ -37,9 +38,10 @@ export default async function InicioPage() {
   const [dados, pontos] = await Promise.all([carregarInicio(profile.id), totalPontos(profile.id)]);
   const { estatisticas: est } = dados;
 
-  const nivel = nivelAtual(pontos);
-  const proximo = proximoNivel(pontos);
-  const faltam = pontosParaProximoNivel(pontos);
+  const niveis = await carregarNiveis();
+  const nivel = nivelAtual(pontos, niveis);
+  const proximo = proximoNivel(pontos, niveis);
+  const faltam = pontosParaProximoNivel(pontos, niveis);
   const faixa = proximo ? proximo.pontosMinimos - nivel.pontosMinimos : 1;
   const pct = proximo ? Math.min(100, ((pontos - nivel.pontosMinimos) / faixa) * 100) : 100;
   const primeiroNome = profile.nome.split(" ")[0];
@@ -48,8 +50,8 @@ export default async function InicioPage() {
   const numeros: [string, string, string][] = [
     ["No mês", String(est.candidaturasNoMes), "candidaturas"],
     ["Total", String(est.totalCandidaturas), "candidaturas"],
-    ["Avançaram", est.taxaResposta === null ? "—" : `${est.taxaResposta}%`, "viraram entrevista"],
-    ["Resposta", est.tempoMedioRespostaDias === null ? "—" : `${String(est.tempoMedioRespostaDias).replace(".", ",")}d`, "tempo médio"],
+    ["Avançaram", est.taxaResposta === null ? "Sem dados" : `${est.taxaResposta}%`, "viraram entrevista"],
+    ["Resposta", est.tempoMedioRespostaDias === null ? "Sem dados" : `${String(est.tempoMedioRespostaDias).replace(".", ",")}d`, "tempo médio"],
   ];
 
   return (
@@ -58,7 +60,7 @@ export default async function InicioPage() {
         <p className="eyebrow">Seu painel</p>
         <h1 className="mt-2 text-4xl sm:text-5xl">Olá, {primeiroNome}</h1>
         <p className="mt-3 max-w-xl text-foreground/60">
-          {est.totalCandidaturas === 0 ? MENSAGENS_SISTEMA.primeiro_acesso : MENSAGENS_SISTEMA.ritmo_mantido}
+          {MENSAGENS_SISTEMA.primeiro_acesso}
         </p>
       </header>
 
@@ -68,11 +70,6 @@ export default async function InicioPage() {
         className="group relative block overflow-hidden rounded-3xl bg-ink p-6 text-ink-fg sm:p-8"
         style={{ boxShadow: "var(--shadow-lift)" }}
       >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(242,172,10,.28) 0%, transparent 65%)" }}
-        />
         <div className="relative flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="eyebrow !text-brand">Nível atual</p>
@@ -85,11 +82,11 @@ export default async function InicioPage() {
           </p>
         </div>
         <div className="relative mt-8">
-          <div className="h-2 overflow-hidden rounded-full bg-white/10">
-            <div className="h-full rounded-full bg-brand" style={{ width: `${pct}%`, boxShadow: "0 0 18px rgba(242,172,10,.6)" }} />
+          <div className="h-2 overflow-hidden rounded-full bg-ink-2">
+            <div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} />
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-ink-muted">
-            <span>{proximo ? `Faltam ${faltam} pontos para ${proximo.nome}` : "Nível máximo alcançado"}</span>
+            <span>{proximo ? `Faltam ${faltam} pontos para você alcançar o próximo passo: ${proximo.nome}` : "Você chegou ao último nível da trilha. Parabéns pela jornada."}</span>
             <span className="inline-flex items-center gap-1 text-ink-fg transition-transform group-hover:translate-x-0.5">
               Ver trilha <Icon name="seta" className="h-3.5 w-3.5" />
             </span>
@@ -120,7 +117,7 @@ export default async function InicioPage() {
                     className="group flex items-center gap-3 rounded-xl border p-3.5 text-sm transition-colors hover:border-brand hover:bg-brand-soft"
                   >
                     <span
-                      className={`h-2 w-2 shrink-0 rounded-full ${p.prioridade === "alta" ? "bg-rose-500" : "bg-brand"}`}
+                      className={`h-2 w-2 shrink-0 rounded-full ${p.prioridade === "alta" ? "bg-danger" : "bg-brand"}`}
                     />
                     <span className="flex-1">{p.texto}</span>
                     <Icon

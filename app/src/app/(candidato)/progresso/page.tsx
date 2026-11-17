@@ -1,8 +1,8 @@
 import { requireProfile } from "@/lib/auth/session";
 import { listarEventosPaginados, totalPontos } from "@/lib/data/pontuacao";
+import { carregarNiveis } from "@/lib/gamification/regras";
 import { Paginacao, lerPagina } from "@/components/ui/paginacao";
 import {
-  NIVEIS,
   nivelAtual,
   pontosParaProximoNivel,
   proximoNivel,
@@ -18,7 +18,7 @@ const ACAO_LABEL: Record<string, string> = {
   documento_assinado_no_prazo: "Documento assinado no prazo",
   exercicio_estruturado_concluido: "Exercício estruturado concluído",
   sessao_mentoria_realizada: "Sessão de mentoria realizada",
-  candidatura_fechada: "Candidatura fechada com sucesso",
+  candidatura_fechada: "Candidatura aprovada",
   sequencia_5_dias_bonus: "Bônus de constância",
 };
 
@@ -37,9 +37,10 @@ export default async function ProgressoPage({
   ]);
   const totalPaginas = Math.max(1, Math.ceil(totalEventos / TAMANHO));
 
-  const nivel = nivelAtual(pontos);
-  const proximo = proximoNivel(pontos);
-  const faltam = pontosParaProximoNivel(pontos);
+  const niveis = await carregarNiveis();
+  const nivel = nivelAtual(pontos, niveis);
+  const proximo = proximoNivel(pontos, niveis);
+  const faltam = pontosParaProximoNivel(pontos, niveis);
 
   const faixaAtual = proximo ? proximo.pontosMinimos - nivel.pontosMinimos : 1;
   const progressoNaFaixa = proximo
@@ -55,11 +56,6 @@ export default async function ProgressoPage({
         className="relative overflow-hidden rounded-3xl bg-ink p-6 text-ink-fg sm:p-8"
         style={{ boxShadow: "var(--shadow-lift)" }}
       >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(242,172,10,.28) 0%, transparent 65%)" }}
-        />
         <div className="relative flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="eyebrow !text-brand">Nível atual</p>
@@ -71,11 +67,11 @@ export default async function ProgressoPage({
             <span className="ml-2 text-base font-normal text-ink-muted">pontos</span>
           </p>
         </div>
-        <div className="relative mt-8 h-2 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full rounded-full bg-brand" style={{ width: `${progressoNaFaixa}%`, boxShadow: "0 0 18px rgba(242,172,10,.6)" }} />
+        <div className="relative mt-8 h-2 overflow-hidden rounded-full bg-ink-2">
+          <div className="h-full rounded-full bg-brand" style={{ width: `${progressoNaFaixa}%` }} />
         </div>
         <p className="relative mt-3 text-xs text-ink-muted">
-          {proximo ? `Faltam ${faltam} pontos para ${proximo.nome}` : "Nível máximo alcançado"}
+          {proximo ? `Faltam ${faltam} pontos para você alcançar o próximo passo: ${proximo.nome}` : "Você chegou ao último nível da trilha. Parabéns pela jornada."}
         </p>
       </div>
 
@@ -84,7 +80,7 @@ export default async function ProgressoPage({
           Trilha de níveis
         </h2>
         <ol className="space-y-2">
-          {NIVEIS.map((n) => (
+          {niveis.map((n) => (
             <li
               key={n.id}
               className={`rounded-md border p-3 text-sm ${
@@ -95,6 +91,9 @@ export default async function ProgressoPage({
             >
               <p className="font-medium">
                 {n.ordem}. {n.nome}
+                {proximo && n.id === proximo.id && (
+                  <span className="ml-2 rounded-full bg-brand px-2 py-0.5 text-xs text-brand-fg">Próximo passo</span>
+                )}
               </p>
               <p className="text-foreground/60">{n.criterioAvanco}</p>
             </li>
@@ -118,7 +117,7 @@ export default async function ProgressoPage({
                 className="flex items-center justify-between rounded-md border p-3 text-sm"
               >
                 <span>{ACAO_LABEL[evento.acao] ?? evento.acao}</span>
-                <span className="font-medium text-emerald-600">
+                <span className="font-medium text-success">
                   +{evento.pontos}
                 </span>
               </li>

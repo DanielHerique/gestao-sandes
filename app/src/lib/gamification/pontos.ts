@@ -103,18 +103,18 @@ export const NIVEIS: NivelDefinicao[] = [
   },
 ];
 
-export function nivelAtual(pontosTotais: number): NivelDefinicao {
-  const elegiveis = NIVEIS.filter((n) => pontosTotais >= n.pontosMinimos);
-  return elegiveis[elegiveis.length - 1] ?? NIVEIS[0];
+export function nivelAtual(pontosTotais: number, niveis: NivelDefinicao[] = NIVEIS): NivelDefinicao {
+  const elegiveis = niveis.filter((n) => pontosTotais >= n.pontosMinimos);
+  return elegiveis[elegiveis.length - 1] ?? niveis[0];
 }
 
-export function proximoNivel(pontosTotais: number): NivelDefinicao | null {
-  const atual = nivelAtual(pontosTotais);
-  return NIVEIS.find((n) => n.ordem === atual.ordem + 1) ?? null;
+export function proximoNivel(pontosTotais: number, niveis: NivelDefinicao[] = NIVEIS): NivelDefinicao | null {
+  const atual = nivelAtual(pontosTotais, niveis);
+  return niveis.find((n) => n.ordem === atual.ordem + 1) ?? null;
 }
 
-export function pontosParaProximoNivel(pontosTotais: number): number | null {
-  const proximo = proximoNivel(pontosTotais);
+export function pontosParaProximoNivel(pontosTotais: number, niveis: NivelDefinicao[] = NIVEIS): number | null {
+  const proximo = proximoNivel(pontosTotais, niveis);
   if (!proximo) return null;
   return Math.max(0, proximo.pontosMinimos - pontosTotais);
 }

@@ -7,10 +7,10 @@ export type PlanoNome =
   | "avulso";
 
 export type CandidaturaStatus =
-  | "indefinido"
-  | "entrevista"
-  | "fechada"
-  | "retorno_negativo";
+  | "em_andamento"
+  | "entrevistas"
+  | "aprovado"
+  | "reprovado";
 
 export type ExercicioStatus = "nao_iniciado" | "em_andamento" | "concluido";
 
@@ -28,6 +28,7 @@ export interface Profile {
   role: UserRole;
   nome: string;
   email: string;
+  tutorial_visto: boolean;
   created_at: string;
 }
 
@@ -233,18 +234,18 @@ export const CHECKLIST_ITEM_LABELS: Record<
   keyof Omit<CandidaturaChecklist, "candidatura_id" | "updated_at">,
   string
 > = {
-  indicacao_perfil: "Indicação de perfil profissional feita pela Sandes",
   curriculo_enviado: "Currículo enviado",
   seguiu_empresa_linkedin: "Seguir a página da empresa no LinkedIn",
   solicitou_conexao_recrutador:
     "Solicitar conexão ao responsável pelo recrutamento no LinkedIn",
+  indicacao_perfil: "Indicação de perfil profissional feita pela Sandes",
 };
 
 export const CANDIDATURA_STATUS_LABELS: Record<CandidaturaStatus, string> = {
-  indefinido: "Indefinido",
-  entrevista: "Entrevista",
-  fechada: "Fechada",
-  retorno_negativo: "Retorno negativo",
+  em_andamento: "Em andamento",
+  entrevistas: "Entrevistas",
+  aprovado: "Aprovado",
+  reprovado: "Reprovado",
 };
 
 export const PLANO_LABELS: Record<PlanoNome, string> = {
@@ -253,3 +254,93 @@ export const PLANO_LABELS: Record<PlanoNome, string> = {
   essencia_proposito: "Essência & Propósito",
   avulso: "Avulso",
 };
+
+// ---------- Fase 2 ----------
+export type ResgateStatus = "pendente" | "aprovado" | "concluido" | "recusado";
+
+export interface LojaItem {
+  id: string;
+  titulo: string;
+  descricao: string | null;
+  custo_pontos: number;
+  cota_mensal: number | null;
+  ativo: boolean;
+  created_at: string;
+}
+
+export interface LojaResgate {
+  id: string;
+  candidato_id: string;
+  item_id: string;
+  item_titulo: string;
+  pontos_debitados: number;
+  status: ResgateStatus;
+  observacao_admin: string | null;
+  created_at: string;
+  decidido_em: string | null;
+  decidido_por: string | null;
+}
+
+export type SessaoStatus = "agendada" | "realizada" | "cancelada" | "faltou";
+
+export interface AgendaDisponibilidade {
+  id: string;
+  dia_semana: number;
+  hora_inicio: string;
+  hora_fim: string;
+  duracao_min: number;
+  ativo: boolean;
+}
+
+export interface AgendaSessao {
+  id: string;
+  candidato_id: string;
+  inicio: string;
+  fim: string;
+  status: SessaoStatus;
+  origem: string;
+  google_event_id: string | null;
+  meet_link: string | null;
+  observacao: string | null;
+  created_at: string;
+}
+
+export interface AcademiaConteudo {
+  id: string;
+  titulo: string;
+  categoria: string;
+  resumo: string | null;
+  corpo: string | null;
+  video_url: string | null;
+  ordem: number;
+  publicado: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export const RESGATE_ROTULO: Record<ResgateStatus, string> = {
+  pendente: "Aguardando aprovação",
+  aprovado: "Aprovado",
+  concluido: "Concluído",
+  recusado: "Recusado",
+};
+
+export const SESSAO_ROTULO: Record<SessaoStatus, string> = {
+  agendada: "Agendada",
+  realizada: "Realizada",
+  cancelada: "Cancelada",
+  faltou: "Não compareceu",
+};
+
+export type ValidacaoIndicacaoStatus = "pendente" | "validada" | "devolvida";
+
+export interface ValidacaoIndicacao {
+  id: string;
+  candidatura_id: string;
+  candidato_id: string;
+  status: ValidacaoIndicacaoStatus;
+  observacao: string | null;
+  validado_por: string | null;
+  validado_em: string | null;
+  created_at: string;
+}

@@ -25,15 +25,15 @@ const ACAO_LABEL: Record<string, string> = {
   documento_assinado_no_prazo: "Documento assinado no prazo",
   exercicio_estruturado_concluido: "Exercício estruturado concluído",
   sessao_mentoria_realizada: "Sessão de mentoria realizada",
-  candidatura_fechada: "Candidatura fechada com sucesso",
+  candidatura_fechada: "Candidatura aprovada",
   sequencia_5_dias_bonus: "Bônus de constância",
 };
 
 const COR_STATUS: Record<string, RGB> = {
-  Indefinido: [148, 163, 184],
-  Entrevista: [245, 158, 11],
-  Fechada: [16, 185, 129],
-  "Retorno negativo": [244, 63, 94],
+  "Em andamento": [148, 163, 184],
+  Entrevistas: [245, 158, 11],
+  Aprovado: [16, 185, 129],
+  Reprovado: [244, 63, 94],
 };
 
 export async function gerarPdfRelatorio(r: RelatorioEngajamento) {

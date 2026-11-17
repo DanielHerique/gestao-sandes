@@ -6,7 +6,7 @@ export interface CandidatoResumo {
   profile: Profile;
   planoAtivo: string | null;
   totalCandidaturas: number;
-  candidaturasAtivas: number; // não fechadas/retorno_negativo
+  candidaturasAtivas: number; // não aprovadas nem reprovadas
   pontos: number;
   documentosPendentes: number;
   ultimaAtividade: string | null;
@@ -46,7 +46,7 @@ export async function listarCarteira(): Promise<CandidatoResumo[]> {
         ]);
 
       const candidaturasAtivas = (candidaturas ?? []).filter(
-        (c) => c.status === "indefinido" || c.status === "entrevista",
+        (c) => c.status === "em_andamento" || c.status === "entrevistas",
       ).length;
 
       const ultimaAtividade = (candidaturas ?? [])

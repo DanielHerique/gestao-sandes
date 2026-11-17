@@ -65,7 +65,7 @@ export default async function CurriculoPage() {
                     )}
                   </div>
                 ) : (
-                  <p className="text-rose-600">
+                  <p className="text-danger">
                     Falha na análise: {a.erro_mensagem}
                   </p>
                 )}

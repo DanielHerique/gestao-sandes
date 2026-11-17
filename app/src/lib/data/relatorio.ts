@@ -4,6 +4,7 @@ import { obterPlanoAtivo } from "./planos";
 import { listarDocumentos } from "./documentos";
 import { listarEventosPontuacao, totalPontos } from "./pontuacao";
 import { nivelAtual } from "@/lib/gamification/pontos";
+import { carregarNiveis } from "@/lib/gamification/regras";
 import { createClient } from "@/lib/supabase/server";
 
 export interface RelatorioEngajamento {
@@ -63,7 +64,7 @@ export async function gerarRelatorioEngajamento(
     concluido: "Concluído",
   };
 
-  const nivel = nivelAtual(pontos);
+  const nivel = nivelAtual(pontos, await carregarNiveis());
 
   return {
     candidatoNome: profile.nome,

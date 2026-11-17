@@ -27,9 +27,9 @@ export default async function AdminDashboardPage() {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
         <Numero rotulo="Total de candidatos" valor={r.total} />
-        <Numero rotulo="Engajados" valor={engajados} tom="text-emerald-600" />
-        <Numero rotulo="Risco de evasão" valor={r.risco} tom="text-rose-600" />
-        <Numero rotulo="Documentos pendentes" valor={r.comDocumentoPendente} tom="text-amber-600" />
+        <Numero rotulo="Engajados" valor={engajados} tom="text-success" />
+        <Numero rotulo="Risco de evasão" valor={r.risco} tom="text-danger" />
+        <Numero rotulo="Documentos pendentes" valor={r.comDocumentoPendente} tom="text-brand-strong" />
       </div>
 
       <section>
@@ -49,7 +49,7 @@ export default async function AdminDashboardPage() {
               <li key={c.id}>
                 <Link
                   href={`/admin/candidatos/${c.id}`}
-                  className="flex flex-col gap-1 rounded-2xl border border-rose-500/25 bg-rose-500/[0.06] p-4 text-sm transition-colors hover:bg-rose-500/10 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-1 rounded-2xl border border-danger bg-danger-soft p-4 text-sm transition-colors hover:bg-danger-soft sm:flex-row sm:items-center sm:justify-between"
                 >
                   <span className="font-medium">
                     {c.nome}

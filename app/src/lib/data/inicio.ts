@@ -27,7 +27,7 @@ export interface Badge {
 export interface EstatisticasPessoais {
   candidaturasNoMes: number;
   totalCandidaturas: number;
-  taxaResposta: number | null; // % que viraram entrevista ou fechada
+  taxaResposta: number | null; // % que viraram entrevista ou aprovada
   tempoMedioRespostaDias: number | null;
   porStatus: Record<string, number>;
 }
@@ -77,8 +77,8 @@ export async function carregarInicio(candidatoId: string): Promise<DadosInicio> 
   const inicioMes = new Date();
   inicioMes.setDate(1);
   inicioMes.setHours(0, 0, 0, 0);
-  const respondidas = cands.filter((c) => c.status !== "indefinido");
-  const viraramEntrevista = cands.filter((c) => c.status === "entrevista" || c.status === "fechada");
+  const respondidas = cands.filter((c) => c.status !== "em_andamento");
+  const viraramEntrevista = cands.filter((c) => c.status === "entrevistas" || c.status === "aprovado");
   const tempos = respondidas.map(
     (c) => (new Date(c.updated_at).getTime() - new Date(c.created_at).getTime()) / DIA,
   );
@@ -111,7 +111,7 @@ export async function carregarInicio(candidatoId: string): Promise<DadosInicio> 
     passos.push({ texto: "Registrar sua primeira candidatura", href: "/candidaturas", prioridade: "alta" });
   }
   for (const c of cands) {
-    if (c.status !== "indefinido" && c.status !== "entrevista") continue;
+    if (c.status !== "em_andamento" && c.status !== "entrevistas") continue;
     const dias = Math.floor((agora - new Date(c.updated_at).getTime()) / DIA);
     if (dias >= 5) {
       passos.push({
@@ -126,7 +126,7 @@ export async function carregarInicio(candidatoId: string): Promise<DadosInicio> 
       .filter((c) => c.indicacao_perfil && c.curriculo_enviado && c.seguiu_empresa_linkedin && c.solicitou_conexao_recrutador)
       .map((c) => c.candidatura_id),
   );
-  const semChecklist = cands.filter((c) => !completos.has(c.id) && c.status === "indefinido").length;
+  const semChecklist = cands.filter((c) => !completos.has(c.id) && c.status === "em_andamento").length;
   if (semChecklist > 0) {
     passos.push({ texto: `Completar o checklist de ${semChecklist} candidatura(s)`, href: "/candidaturas", prioridade: "normal" });
   }
@@ -153,8 +153,8 @@ export async function carregarInicio(candidatoId: string): Promise<DadosInicio> 
   const tl: EventoLinhaTempo[] = [];
   for (const c of cands) {
     tl.push({ quando: c.created_at, titulo: "Candidatura registrada", detalhe: `${c.cargo} · ${c.empresa}`, tipo: "candidatura" });
-    if (c.status !== "indefinido" && c.updated_at !== c.created_at) {
-      const rotulos: Record<string, string> = { entrevista: "avançou para Entrevista", fechada: "foi fechada", retorno_negativo: "recebeu retorno negativo" };
+    if (c.status !== "em_andamento" && c.updated_at !== c.created_at) {
+      const rotulos: Record<string, string> = { entrevistas: "avançou para Entrevista", aprovado: "foi aprovada", reprovado: "foi reprovada" };
       const rot = rotulos[c.status] ?? "mudou de status";
       tl.push({ quando: c.updated_at, titulo: `Candidatura ${rot}`, detalhe: `${c.cargo} · ${c.empresa}`, tipo: "status" });
     }
@@ -174,7 +174,7 @@ export async function carregarInicio(candidatoId: string): Promise<DadosInicio> 
   const badges: Badge[] = [
     { id: "primeiro_passo", nome: "Primeiro passo", descricao: "Registrou a primeira candidatura", conquistada: cands.length >= 1 },
     { id: "ritmo", nome: "Ritmo de busca", descricao: "Registrou 5 candidaturas", conquistada: cands.length >= 5 },
-    { id: "entrevista", nome: "Na mesa de entrevista", descricao: "Uma candidatura chegou a entrevista", conquistada: cands.some((c) => c.status === "entrevista" || c.status === "fechada") },
+    { id: "entrevista", nome: "Na mesa de entrevista", descricao: "Uma candidatura chegou a entrevista", conquistada: cands.some((c) => c.status === "entrevistas" || c.status === "aprovado") },
     { id: "checklist", nome: "Método aplicado", descricao: "Completou o checklist de uma candidatura", conquistada: completos.size >= 1 },
     { id: "curriculo", nome: "Currículo em foco", descricao: "Concluiu uma análise de currículo", conquistada: analisesOk >= 1 },
     { id: "documento", nome: "Em dia com a papelada", descricao: "Assinou um documento", conquistada: docs.some((d) => d.status === "assinado") },

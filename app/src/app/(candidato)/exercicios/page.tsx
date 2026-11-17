@@ -30,8 +30,8 @@ export default async function ExerciciosPage() {
     <div className="max-w-4xl">
       <h1 className="mb-1 text-3xl sm:text-4xl">Exercícios estruturados</h1>
       {!planoAtivo && (
-        <p className="mb-4 text-sm text-amber-600">
-          Nenhum plano contratado atribuído ainda — apenas a Lista Mestra está
+        <p className="mb-4 text-sm text-brand-strong">
+          Nenhum plano contratado atribuído ainda. Apenas a Lista Mestra está
           disponível.
         </p>
       )}

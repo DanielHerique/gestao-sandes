@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { MENSAGENS_SISTEMA } from "@/lib/gamification/mensagens";
 import { nivelAtual } from "@/lib/gamification/pontos";
+import { carregarRegras, niveisComConfig } from "@/lib/gamification/regras";
 import { LIMITE_ANALISES } from "@/lib/data/curriculo";
 
 // Notificações comportamentais — PRD 3.8 (b).
@@ -21,6 +22,7 @@ export async function gerarNotificacoesComportamentais(
 ): Promise<number> {
   const admin = createAdminClient();
   const agora = Date.now();
+  const { config } = await carregarRegras();
 
   const [{ data: profile }, { data: candidaturas }, { count: analises }, { data: eventos }, { data: existentes }] =
     await Promise.all([
@@ -55,7 +57,7 @@ export async function gerarNotificacoesComportamentais(
   const diasSemCadastrar = ultimaCriacao
     ? (agora - ultimaCriacao) / DIA
     : contaTemDias;
-  if (diasSemCadastrar >= 2 && contaTemDias >= 2) {
+  if (diasSemCadastrar >= config.aviso_dias_sem_cadastrar && contaTemDias >= config.aviso_dias_sem_cadastrar) {
     avisos.push({
       titulo: "Faz alguns dias sem registrar candidaturas",
       mensagem: MENSAGENS_SISTEMA.ritmo_interrompido,
@@ -65,9 +67,9 @@ export async function gerarNotificacoesComportamentais(
 
   // 2) Candidatura parada há 10+ dias
   for (const c of lista) {
-    if (c.status !== "indefinido" && c.status !== "entrevista") continue;
+    if (c.status !== "em_andamento" && c.status !== "entrevistas") continue;
     const dias = Math.floor((agora - new Date(c.updated_at).getTime()) / DIA);
-    if (dias >= 10) {
+    if (dias >= config.aviso_dias_candidatura_parada) {
       avisos.push({
         titulo: `Candidatura parada: ${c.cargo} · ${c.empresa}`,
         mensagem: `Essa candidatura está há ${dias} dias no mesmo status. Atualize o status ou faça um contato de acompanhamento. ${MENSAGENS_SISTEMA.sem_resposta}`,
@@ -96,7 +98,7 @@ export async function gerarNotificacoesComportamentais(
 
   // 4) Marco de gamificação: nível alcançado (exceto o inicial)
   const pontos = (eventos ?? []).reduce((t, e) => t + e.pontos, 0);
-  const nivel = nivelAtual(pontos);
+  const nivel = nivelAtual(pontos, niveisComConfig(config));
   if (nivel.ordem > 1) {
     avisos.push({
       titulo: `Você alcançou o nível ${nivel.nome}`,

@@ -76,7 +76,7 @@ export function Autoconhecimento({
   return (
     <div>
       <p className="mb-4 text-sm text-foreground/60">
-        Aprofundando o Autoconhecimento — módulo de Autoconhecimento (Essência
+        Aprofundando o Autoconhecimento, módulo de Autoconhecimento (Essência
         & Propósito).
       </p>
 
@@ -121,7 +121,7 @@ export function Autoconhecimento({
         <button
           disabled={pending}
           onClick={() => salvar("concluido")}
-          className="rounded-md bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700"
+          className="rounded-md bg-success px-4 py-2 text-sm text-ink-fg hover:bg-success"
         >
           Concluir exercício
         </button>

@@ -21,10 +21,10 @@ const STATUS_COLOR: Record<DocumentoStatus, string> = {
   liberado: "bg-brand-soft text-brand-strong",
   nao_liberado: "bg-line text-foreground/60",
   pendente_assinatura:
-    "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
+    "bg-brand-soft text-brand-strong",
   assinado:
-    "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
-  vencido: "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300",
+    "bg-success-soft text-success",
+  vencido: "bg-danger-soft text-danger",
 };
 
 export function DocumentoCard({ documento }: { documento: Documento }) {

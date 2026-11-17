@@ -2,16 +2,20 @@
 
 import { useRef, useState, useTransition } from "react";
 import { enviarCurriculoParaAnaliseAction } from "@/app/(candidato)/curriculo/actions";
+import { useFeedback } from "@/components/ui/feedback";
 
 export function UploadForm({ restante }: { restante: number }) {
   const [pending, startTransition] = useTransition();
   const [mensagem, setMensagem] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const fb = useFeedback();
 
   function handleSubmit(formData: FormData) {
     startTransition(async () => {
       const resultado = await enviarCurriculoParaAnaliseAction(formData);
       setMensagem(resultado.mensagem);
+      if (resultado.ok) fb.sucesso("Currículo enviado", resultado.mensagem);
+      else fb.erro("Não foi possível enviar", resultado.mensagem);
       if (resultado.ok) formRef.current?.reset();
     });
   }

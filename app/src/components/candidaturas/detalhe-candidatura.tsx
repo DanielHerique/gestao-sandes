@@ -122,7 +122,7 @@ export function DetalheCandidatura({
             type="button"
             onClick={excluir}
             disabled={pending}
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm text-rose-600 hover:bg-rose-500/10"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm text-danger hover:bg-danger-soft"
           >
             <Icon name="lixeira" className="h-4 w-4" />
             Excluir

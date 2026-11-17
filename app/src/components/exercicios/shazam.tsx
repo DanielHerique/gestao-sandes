@@ -101,7 +101,7 @@ export function Shazam({
   return (
     <div>
       <p className="mb-4 text-sm text-foreground/60">
-        Ferramenta Shazam — módulo de Autoconhecimento (Essência & Propósito).
+        Ferramenta Shazam, módulo de Autoconhecimento (Essência & Propósito).
       </p>
 
       <div className="space-y-6">
@@ -141,7 +141,7 @@ export function Shazam({
         <button
           disabled={pending}
           onClick={() => salvar("concluido")}
-          className="rounded-md bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700"
+          className="rounded-md bg-success px-4 py-2 text-sm text-ink-fg hover:bg-success"
         >
           Concluir exercício
         </button>

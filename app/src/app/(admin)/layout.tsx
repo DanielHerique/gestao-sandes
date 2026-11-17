@@ -4,9 +4,16 @@ import { requireAdmin } from "@/lib/auth/session";
 
 const NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: "dashboard" },
-  { href: "/admin/candidatos", label: "Carteira de candidatos", icon: "carteira" },
+  { href: "/admin/candidatos", label: "Carteira", icon: "carteira" },
+  { href: "/admin/validacoes", label: "Validações", icon: "validacoes" },
+  { href: "/admin/documentos", label: "Documentos", icon: "documentos" },
+];
+
+const MAIS: NavItem[] = [
+  { href: "/admin/agenda", label: "Agenda", icon: "agenda" },
+  { href: "/admin/loja", label: "Loja de recompensas", icon: "loja" },
+  { href: "/admin/gamificacao", label: "Regras de gamificação", icon: "engrenagem" },
   { href: "/admin/prompts", label: "Prompts de IA", icon: "prompts" },
-  { href: "/admin/documentos", label: "Templates de documentos", icon: "documentos" },
 ];
 
 export default async function AdminLayout({
@@ -18,6 +25,7 @@ export default async function AdminLayout({
   return (
     <AppShell
       nav={NAV}
+      mais={MAIS}
       subtitulo="Painel admin"
       usuario={{ nome: profile.nome, email: profile.email }}
       logoutSlot={<LogoutButton />}

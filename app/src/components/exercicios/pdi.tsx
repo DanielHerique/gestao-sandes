@@ -52,7 +52,7 @@ export function Pdi({
   return (
     <div>
       <p className="mb-4 text-sm text-foreground/60">
-        Plano de Desenvolvimento Individual — módulo de Autoconhecimento
+        Plano de Desenvolvimento Individual, módulo de Autoconhecimento
         (Essência & Propósito).
       </p>
 
@@ -67,7 +67,7 @@ export function Pdi({
               className="flex items-center justify-between rounded-md border p-3 text-sm"
             >
               <span>
-                {meta.competencia} —{" "}
+                {meta.competencia} ·{" "}
                 <span className="text-foreground/60">
                   {meta.prazo ? PRAZO_LABEL[meta.prazo] : ""}
                 </span>
@@ -90,7 +90,7 @@ export function Pdi({
                     }
                   });
                 }}
-                className="text-xs text-rose-600 hover:underline"
+                className="text-xs text-danger hover:underline"
               >
                 Remover
               </button>
@@ -166,7 +166,7 @@ export function Pdi({
                       });
                     }
                   }
-                  className="text-xs text-rose-600 hover:underline"
+                  className="text-xs text-danger hover:underline"
                 >
                   Remover
                 </button>
@@ -175,7 +175,7 @@ export function Pdi({
                 {CAMPOS_5W2H.map((c) => (
                   <p key={c.key}>
                     <span className="text-foreground/60">{c.label}: </span>
-                    {(linha[c.key] as string) || "—"}
+                    {(linha[c.key] as string) || "Sem registro"}
                   </p>
                 ))}
               </div>
@@ -237,7 +237,7 @@ export function Pdi({
                 });
               })
           }
-          className="rounded-md bg-emerald-600 px-4 py-2 text-sm text-white hover:bg-emerald-700"
+          className="rounded-md bg-success px-4 py-2 text-sm text-ink-fg hover:bg-success"
         >
           Concluir exercício
         </button>

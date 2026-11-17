@@ -127,7 +127,7 @@ export function PromptManager({ prompts }: { prompts: PromptIA[] }) {
                 type="button"
                 onClick={() => excluir(p)}
                 aria-label={`Excluir ${p.titulo}`}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-foreground/40 hover:bg-rose-500/10 hover:text-rose-600"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-foreground/40 hover:bg-danger-soft hover:text-danger"
               >
                 <Icon name="lixeira" className="h-[18px] w-[18px]" />
               </button>

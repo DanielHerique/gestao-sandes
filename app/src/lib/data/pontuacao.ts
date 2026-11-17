@@ -1,10 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import {
-  LIMITE_DIARIO_POR_ACAO,
-  PONTOS_POR_ACAO,
-  type AcaoPontuavel,
-} from "@/lib/gamification/pontos";
+import { type AcaoPontuavel } from "@/lib/gamification/pontos";
+import { carregarRegras } from "@/lib/gamification/regras";
 import type { PontuacaoEvento } from "@/lib/types/database";
 
 export async function listarEventosPontuacao(
@@ -63,6 +60,8 @@ export async function registrarEventoPontuacao(
   // A regra de segurança do banco só deixa o sistema gravar pontos. Quem chama
   // (server action) já validou o usuário; aqui gravamos com a chave de serviço.
   const supabase = createAdminClient();
+  const regras = await carregarRegras();
+  if (regras.ativas[acao] === false) return null; // regra desativada pelo admin
 
   // Ações "únicas": a mesma ação sobre a mesma referência pontua só uma vez
   // (evita ganhar pontos arrastando um card de um lado para o outro).
@@ -78,7 +77,7 @@ export async function registrarEventoPontuacao(
     if ((jaPontuou ?? 0) > 0) return null;
   }
 
-  const limite = LIMITE_DIARIO_POR_ACAO[acao];
+  const limite = regras.limites[acao];
   if (limite !== undefined) {
     const inicioHoje = new Date();
     inicioHoje.setHours(0, 0, 0, 0);
@@ -99,7 +98,7 @@ export async function registrarEventoPontuacao(
     .insert({
       candidato_id: candidatoId,
       acao,
-      pontos: PONTOS_POR_ACAO[acao],
+      pontos: regras.pontos[acao],
       referencia_tipo: referencia?.tipo ?? null,
       referencia_id: referencia?.id ?? null,
     })

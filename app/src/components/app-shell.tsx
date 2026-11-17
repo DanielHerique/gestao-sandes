@@ -11,23 +11,43 @@ export interface NavItem {
   icon: string;
 }
 
-// Mobile-first: barra superior + menu em tela cheia no celular;
-// menu lateral escuro e fixo a partir de `lg`.
+function estaAtivo(pathname: string, href: string) {
+  return pathname === href || (href !== "/admin" && pathname.startsWith(href + "/"));
+}
+
+// Celular: barra superior + barra inferior com até 5 itens (o último é "Mais").
+// Desktop: cabeçalho superior com a navegação principal e o menu da pessoa.
 export function AppShell({
   nav,
+  mais = [],
   subtitulo,
   usuario,
+  sino,
   logoutSlot,
   children,
 }: {
+  /** Itens principais. No celular, só os 4 primeiros ficam na barra inferior. */
   nav: NavItem[];
+  /** Itens secundários: ficam em "Mais". */
+  mais?: NavItem[];
   subtitulo: string;
   usuario: { nome: string; email: string };
+  /** Rota das notificações (mostra o sino). */
+  sino?: string;
   logoutSlot: React.ReactNode;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [aberto, setAberto] = useState(false);
+  // Cada menu guarda a rota em que foi aberto: ao navegar, ele fecha sozinho.
+  const [maisEm, setMaisEm] = useState<string | null>(null); // "Mais"
+  const [pessoaEm, setPessoaEm] = useState<string | null>(null); // menu da pessoa (desktop)
+  const menuAberto = maisEm === pathname;
+  const pessoaAberta = pessoaEm === pathname;
+  const setMenuAberto = (v: boolean | ((a: boolean) => boolean)) =>
+    setMaisEm((atual) => ((typeof v === "function" ? v(atual === pathname) : v) ? pathname : null));
+  const setPessoaAberta = (v: boolean | ((a: boolean) => boolean)) =>
+    setPessoaEm((atual) => ((typeof v === "function" ? v(atual === pathname) : v) ? pathname : null));
+
   const iniciais = usuario.nome
     .split(" ")
     .filter(Boolean)
@@ -36,107 +56,179 @@ export function AppShell({
     .join("")
     .toUpperCase();
 
+  const principaisCelular = nav.slice(0, 4);
+  const noMais = [...nav.slice(4), ...mais];
+  const maisAtivo = noMais.some((i) => estaAtivo(pathname, i.href));
+
   const marca = (
-    <div className="flex items-center gap-3">
+    <Link href={nav[0]?.href ?? "/"} className="flex items-center gap-3" aria-label="Início">
       <Marca />
       <span className="leading-tight">
-        <span className="block font-display text-[17px] font-semibold tracking-tight text-ink-fg">
-          Sandes
-        </span>
-        <span className="block text-[11px] uppercase tracking-[0.14em] text-ink-muted">
-          {subtitulo}
-        </span>
+        <span className="block text-base font-bold">Sandes</span>
+        <span className="block text-xs text-foreground/60">{subtitulo}</span>
       </span>
-    </div>
+    </Link>
   );
 
-  const links = (
-    <nav className="flex flex-col gap-0.5">
-      {nav.map((item) => {
-        const ativo =
-          pathname === item.href ||
-          (item.href !== "/admin" && pathname.startsWith(item.href + "/"));
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setAberto(false)}
-            aria-current={ativo ? "page" : undefined}
-            className={`group relative flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm transition-colors ${
-              ativo
-                ? "bg-white/[0.07] font-medium text-ink-fg"
-                : "text-ink-muted hover:bg-white/[0.04] hover:text-ink-fg"
-            }`}
-          >
-            {ativo && (
-              <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-brand" />
-            )}
-            <Icon
-              name={item.icon}
-              className={`h-[18px] w-[18px] ${ativo ? "text-brand" : ""}`}
-            />
-            {item.label}
-          </Link>
-        );
-      })}
-    </nav>
+  const botaoSino = sino && (
+    <Link
+      href={sino}
+      aria-label="Notificações"
+      className="flex h-12 w-12 items-center justify-center rounded-full hover:bg-brand-soft"
+    >
+      <Icon name="notificacoes" />
+    </Link>
   );
 
-  const rodape = (
-    <div className="space-y-2">
-      <div className="flex items-center gap-3 rounded-xl bg-white/[0.04] p-2.5">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-ink-fg">
-          {iniciais}
-        </span>
-        <span className="min-w-0 leading-tight">
-          <span className="block truncate text-sm font-medium text-ink-fg">
-            {usuario.nome}
-          </span>
-          <span className="block truncate text-xs text-ink-muted">
-            {usuario.email}
-          </span>
-        </span>
-      </div>
-      {logoutSlot}
-    </div>
-  );
+  const linkMais = (item: NavItem) => {
+    const ativo = estaAtivo(pathname, item.href);
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        aria-current={ativo ? "page" : undefined}
+        className={`flex min-h-12 items-center gap-3 rounded-full px-4 text-sm ${
+          ativo ? "bg-brand-soft font-semibold" : "hover:bg-neutral"
+        }`}
+      >
+        <Icon name={item.icon} className="h-5 w-5" />
+        {item.label}
+      </Link>
+    );
+  };
 
   return (
-    <div className="min-h-dvh lg:flex">
-      {/* Barra superior (mobile) */}
-      <header className="sticky top-0 z-30 flex items-center justify-between bg-ink px-4 py-3 lg:hidden">
-        {marca}
-        <button
-          type="button"
-          aria-label={aberto ? "Fechar menu" : "Abrir menu"}
-          aria-expanded={aberto}
-          onClick={() => setAberto((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 text-ink-fg"
-        >
-          <Icon name={aberto ? "fechar" : "menu"} />
-        </button>
+    <div className="min-h-dvh pb-20 lg:pb-0">
+      {/* Cabeçalho */}
+      <header className="sticky top-0 z-30 border-b bg-surface">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-8 lg:px-12">
+          {marca}
+
+          <nav aria-label="Principal" className="hidden items-center gap-1 lg:flex">
+            {nav.map((item) => {
+              const ativo = estaAtivo(pathname, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={ativo ? "page" : undefined}
+                  className={`flex min-h-12 items-center rounded-full px-4 text-sm ${
+                    ativo ? "bg-brand-soft font-bold" : "text-foreground/70 hover:bg-neutral"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+            {mais.length > 0 && (
+              <div className="relative">
+                <button
+                  type="button"
+                  aria-expanded={menuAberto}
+                  onClick={() => setMenuAberto((v) => !v)}
+                  className={`flex min-h-12 items-center gap-1 rounded-full px-4 text-sm ${
+                    maisAtivo ? "bg-brand-soft font-bold" : "text-foreground/70 hover:bg-neutral"
+                  }`}
+                >
+                  Mais
+                </button>
+                {menuAberto && (
+                  <>
+                    <button type="button" aria-label="Fechar menu" className="fixed inset-0 z-10 cursor-default" onClick={() => setMenuAberto(false)} />
+                    <div className="absolute right-0 z-20 mt-2 w-60 space-y-1 rounded-2xl border bg-surface p-2" style={{ boxShadow: "var(--shadow-float)" }}>
+                      {mais.map(linkMais)}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </nav>
+
+          <div className="flex items-center gap-1">
+            {botaoSino}
+            <div className="relative hidden lg:block">
+              <button
+                type="button"
+                aria-label="Menu da conta"
+                aria-expanded={pessoaAberta}
+                onClick={() => setPessoaAberta((v) => !v)}
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-sm font-semibold text-ink-fg"
+              >
+                {iniciais}
+              </button>
+              {pessoaAberta && (
+                <>
+                  <button type="button" aria-label="Fechar menu" className="fixed inset-0 z-10 cursor-default" onClick={() => setPessoaAberta(false)} />
+                  <div className="absolute right-0 z-20 mt-2 w-64 rounded-2xl bg-ink p-3 text-ink-fg" style={{ boxShadow: "var(--shadow-overlay)" }}>
+                    <p className="truncate px-3.5 pt-1 text-sm font-semibold">{usuario.nome}</p>
+                    <p className="truncate px-3.5 pb-2 text-xs text-ink-muted">{usuario.email}</p>
+                    {logoutSlot}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       </header>
 
-      {/* Menu em tela cheia (mobile) */}
-      {aberto && (
-        <div className="fixed inset-x-0 bottom-0 top-[65px] z-20 flex flex-col justify-between overflow-y-auto bg-ink p-4 lg:hidden">
-          {links}
-          <div className="mt-8">{rodape}</div>
-        </div>
-      )}
-
-      {/* Menu lateral (desktop) */}
-      <aside className="hidden w-64 shrink-0 flex-col justify-between bg-ink p-5 lg:sticky lg:top-0 lg:flex lg:h-dvh">
-        <div>
-          <div className="mb-10 px-1 pt-1">{marca}</div>
-          {links}
-        </div>
-        {rodape}
-      </aside>
-
-      <main className="min-w-0 flex-1 px-4 py-6 sm:px-8 lg:px-12 lg:py-10">
+      <main className="min-w-0 px-4 py-6 sm:px-8 lg:px-12 lg:py-10">
         <div className="mx-auto w-full max-w-6xl">{children}</div>
       </main>
+
+      {/* Barra inferior (celular): no máximo 5 itens, o ativo ganha fundo e peso */}
+      <nav aria-label="Principal" className="fixed inset-x-0 bottom-0 z-30 border-t bg-surface lg:hidden">
+        <ul className="mx-auto flex max-w-md">
+          {principaisCelular.map((item) => {
+            const ativo = estaAtivo(pathname, item.href);
+            return (
+              <li key={item.href} className="flex-1">
+                <Link
+                  href={item.href}
+                  aria-current={ativo ? "page" : undefined}
+                  className="flex min-h-16 flex-col items-center justify-center gap-0.5 py-2 text-xs"
+                >
+                  <span className={`flex h-8 w-14 items-center justify-center rounded-full ${ativo ? "bg-brand-soft" : ""}`}>
+                    <Icon name={item.icon} className="h-5 w-5" />
+                  </span>
+                  <span className={ativo ? "font-bold" : "text-foreground/70"}>{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+          <li className="flex-1">
+            <button
+              type="button"
+              aria-expanded={menuAberto}
+              onClick={() => setMenuAberto((v) => !v)}
+              className="flex min-h-16 w-full flex-col items-center justify-center gap-0.5 py-2 text-xs"
+            >
+              <span className={`flex h-8 w-14 items-center justify-center rounded-full ${menuAberto || maisAtivo ? "bg-brand-soft" : ""}`}>
+                <Icon name="menu" className="h-5 w-5" />
+              </span>
+              <span className={menuAberto || maisAtivo ? "font-bold" : "text-foreground/70"}>Mais</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      {/* Folha "Mais" (celular) */}
+      {menuAberto && (
+        <div className="fixed inset-0 z-40 flex items-end bg-black/40 lg:hidden" onMouseDown={(e) => e.target === e.currentTarget && setMenuAberto(false)}>
+          <div className="max-h-[85dvh] w-full space-y-1 overflow-y-auto rounded-t-2xl bg-surface p-3 pb-6" style={{ boxShadow: "var(--shadow-overlay)" }}>
+            <div className="flex items-center justify-between px-2 pb-2">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold">{usuario.nome}</p>
+                <p className="truncate text-xs text-foreground/60">{usuario.email}</p>
+              </div>
+              <button type="button" aria-label="Fechar" onClick={() => setMenuAberto(false)} className="flex h-12 w-12 items-center justify-center rounded-full hover:bg-neutral">
+                <Icon name="fechar" />
+              </button>
+            </div>
+            {noMais.map(linkMais)}
+            <div className="mt-2 rounded-2xl bg-ink p-2 text-ink-fg">{logoutSlot}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

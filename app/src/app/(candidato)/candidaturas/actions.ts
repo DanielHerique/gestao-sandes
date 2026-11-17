@@ -13,6 +13,8 @@ import {
   type NovaCandidaturaInput,
 } from "@/lib/data/candidaturas";
 import { registrarEventoPontuacao } from "@/lib/data/pontuacao";
+import { enfileirarValidacao } from "@/lib/data/validacoes";
+import { carregarRegras } from "@/lib/gamification/regras";
 import type { CandidaturaChecklist, CandidaturaStatus } from "@/lib/types/database";
 
 const CANDIDATURAS_PATH = "/candidaturas";
@@ -25,6 +27,7 @@ export async function criarCandidaturaAction(input: NovaCandidaturaInput) {
   const profile = await requireProfile();
 
   const candidatura = await criarCandidatura(profile.id, input);
+  await enfileirarValidacao(candidatura.id, profile.id, input.perfil_recrutador_linkedin);
   const evento = await registrarEventoPontuacao(profile.id, "candidatura_criada", {
     tipo: "candidatura",
     id: candidatura.id,
@@ -38,8 +41,11 @@ export async function atualizarCandidaturaAction(
   id: string,
   input: AtualizacaoCandidatura,
 ) {
-  await requireProfile();
+  const profile = await requireProfile();
   await atualizarCandidatura(id, input);
+  if (input.perfil_recrutador_linkedin) {
+    await enfileirarValidacao(id, profile.id, input.perfil_recrutador_linkedin);
+  }
   revalidarTelasDoCandidato();
 }
 
@@ -67,19 +73,20 @@ export async function moverStatusAction(
   let pontos = 0;
   const ganhos = [];
 
-  if (status === "entrevista") {
+  if (status === "entrevistas") {
     ganhos.push(
       await registrarEventoPontuacao(profile.id, "status_mudou_para_entrevista", ref, { unico: true }),
     );
   }
-  if (status === "fechada") {
+  if (status === "aprovado") {
     ganhos.push(
       await registrarEventoPontuacao(profile.id, "candidatura_fechada", ref, { unico: true }),
     );
   }
   // Manter o funil atualizado: candidatura parada há mais de 5 dias que ganha novo status
   const diasParada = (Date.now() - new Date(antes.updated_at).getTime()) / 86400000;
-  if (diasParada > 5) {
+  const { config } = await carregarRegras();
+  if (diasParada > config.bonus_dias_parada) {
     ganhos.push(
       await registrarEventoPontuacao(profile.id, "status_atualizado_apos_5_dias_parado", ref),
     );
@@ -96,6 +103,8 @@ export async function marcarChecklistItemAction(
   valor: boolean,
 ): Promise<ResultadoPontos> {
   const profile = await requireProfile();
+  // A indicação da Sandes é marcada pela mentora na tela de Validações
+  if (item === "indicacao_perfil") return { pontos: 0 };
   await atualizarChecklistItem(candidaturaId, item, valor);
 
   let pontos = 0;

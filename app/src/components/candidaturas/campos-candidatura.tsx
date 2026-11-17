@@ -174,7 +174,7 @@ export function CamposCandidatura({
                   type="button"
                   aria-label={`Remover perfil ${i + 1}`}
                   onClick={() => removerPerfil(i)}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-foreground/40 hover:bg-rose-500/10 hover:text-rose-600"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-foreground/40 hover:bg-danger-soft hover:text-danger"
                 >
                   <Icon name="lixeira" className="h-[18px] w-[18px]" />
                 </button>

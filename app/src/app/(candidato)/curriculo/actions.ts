@@ -83,7 +83,7 @@ export async function enviarCurriculoParaAnaliseAction(
       ok: false,
       mensagem: naoConfigurada
         ? "O analisador de IA ainda não foi ativado neste ambiente. Seu arquivo foi salvo e a cota não foi usada."
-        : "Não foi possível analisar o arquivo agora. Tente novamente — a cota não foi usada.",
+        : "Não foi possível analisar o arquivo agora. Tente novamente. A cota não foi usada.",
     };
   }
 }

@@ -1,6 +1,7 @@
 import { requireAdmin } from "@/lib/auth/session";
 import { carteiraPaginada } from "@/lib/data/admin";
 import { CarteiraComFiltros } from "@/components/admin/carteira";
+import { NovoMentorado } from "@/components/admin/novo-mentorado";
 import { Paginacao, lerPagina } from "@/components/ui/paginacao";
 
 const TAMANHO = 12;
@@ -21,8 +22,13 @@ export default async function CarteiraPage({
 
   return (
     <div>
-      <p className="eyebrow">Gestão</p>
-      <h1 className="mb-1 mt-2 text-3xl sm:text-4xl">Carteira de candidatos</h1>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="eyebrow">Gestão</p>
+          <h1 className="mb-1 mt-2 text-3xl sm:text-4xl">Carteira de candidatos</h1>
+        </div>
+        <NovoMentorado />
+      </div>
       <p className="mb-6 text-sm text-foreground/60">
         Filtre por plano, situação de engajamento ou pendências.
       </p>
