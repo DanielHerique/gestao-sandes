@@ -5,7 +5,7 @@ import { chamarClaude, type MensagemIa } from "@/lib/ai/claude";
 import { IaNaoConfiguradaError } from "@/lib/data/analise-ia";
 import { usarIa } from "@/lib/data/usos-ia";
 
-export const PERGUNTAS_POR_TREINO = 5;
+import { PERGUNTAS_POR_TREINO } from "@/lib/ai/treino";
 
 function sistema(cargo: string, rodada: number) {
   return `Você é um entrevistador experiente de RH no Brasil, treinando uma pessoa para a vaga de "${cargo}".

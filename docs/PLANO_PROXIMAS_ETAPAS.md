@@ -63,3 +63,8 @@ Itens 1 (Validações), 2 (Novo mentorado), 3 (boas-vindas), 4 (próximo passo; 
 - Agenda e Loja saíram dos menus (Fase 2). As tabelas existem desde a migration 0006.
 
 Continua dependendo da cliente: níveis por marco e missões, pausa da semana ativa, cupom, valores e textos finais de Serviços, número do WhatsApp, "Contar como foi a sessão", planos (item 6), movimentos errados (item 9).
+
+## Fase 2 em andamento
+
+- Feito: Raio-x da vaga (`/raio-x`) e Treino de entrevista (`/treino-entrevista`), com IA da Anthropic e limite diário por pessoa (migration `0008_usos_ia.sql`). Exigem `ANTHROPIC_API_KEY` na Vercel.
+- Não feito por falta de definição: menu lateral no desktop (os 3 grupos não estão descritos no Figma), "Sua voz" e Histórias, planos em assinatura, check-in e retrospectiva (dependem de pontos ficarem ou não).

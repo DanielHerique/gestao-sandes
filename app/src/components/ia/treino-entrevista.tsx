@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { PERGUNTAS_POR_TREINO, treinarEntrevistaAction } from "@/app/(candidato)/treino-entrevista/actions";
+import { treinarEntrevistaAction } from "@/app/(candidato)/treino-entrevista/actions";
+import { PERGUNTAS_POR_TREINO } from "@/lib/ai/treino";
 import { useFeedback } from "@/components/ui/feedback";
 
 interface Msg {
