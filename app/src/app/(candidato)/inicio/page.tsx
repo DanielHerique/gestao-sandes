@@ -6,6 +6,7 @@ import { carregarInicio } from "@/lib/data/inicio";
 import { totalPontos } from "@/lib/data/pontuacao";
 import { nivelAtual, pontosParaProximoNivel, proximoNivel } from "@/lib/gamification/pontos";
 import { carregarNiveis } from "@/lib/gamification/regras";
+import { semanasAtivas } from "@/lib/data/semana-ativa";
 import { MENSAGENS_SISTEMA } from "@/lib/gamification/mensagens";
 
 const ICONE_TL: Record<string, string> = {
@@ -38,6 +39,8 @@ export default async function InicioPage() {
   const [dados, pontos] = await Promise.all([carregarInicio(profile.id), totalPontos(profile.id)]);
   const { estatisticas: est } = dados;
 
+  const semanas = await semanasAtivas(profile.id);
+  const ativasCount = semanas.filter((x) => x.ativa).length;
   const niveis = await carregarNiveis();
   const nivel = nivelAtual(pontos, niveis);
   const proximo = proximoNivel(pontos, niveis);
@@ -99,6 +102,22 @@ export default async function InicioPage() {
           </div>
         </div>
       </Link>
+
+      <section className="rounded-2xl border bg-surface p-5 sm:p-6">
+        <h2 className="text-lg">Semana ativa</h2>
+        <p className="mt-1 text-sm text-foreground/60">Basta 1 ação na semana para manter o ritmo.</p>
+        <ol className="mt-4 flex justify-between gap-2">
+          {semanas.map((x) => (
+            <li key={x.rotulo} className="flex flex-col items-center gap-1.5 text-xs text-foreground/60">
+              <span className={`flex h-9 w-9 items-center justify-center rounded-full ${x.ativa ? "bg-brand text-brand-fg" : "bg-neutral"}`}>
+                {x.ativa && <Icon name="check" className="h-4 w-4" />}
+              </span>
+              {x.rotulo}
+            </li>
+          ))}
+        </ol>
+        <p className="mt-4 text-sm text-foreground/60">{ativasCount} de {semanas.length} semanas com ação registrada.</p>
+      </section>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
         {numeros.map(([rotulo, valor, legenda]) => (

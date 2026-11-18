@@ -51,3 +51,15 @@ Itens 1 (Validações), 2 (Novo mentorado), 3 (boas-vindas), 4 (próximo passo; 
 
 - Aplicar migrations no Supabase (a `0007` já foi aplicada).
 - O plano gratuito do Supabase pausa o projeto após cerca de uma semana sem uso. Avisar a Sandes ou migrar para o plano pago antes da validação.
+
+## Atualização: feito sem depender da cliente
+
+- Início: botão "Registrar uma vaga" e cartão "Semana ativa" (calculado das ações já registradas, sem pausa ainda).
+- Vagas: etiqueta "Indicação em validação" e dica de follow-up após 7 dias.
+- Serviços: tela com preços do Figma. Os botões de WhatsApp só aparecem com `NEXT_PUBLIC_WHATSAPP_SANDES` definido (Vercel e `.env.local`).
+- Documentos: aviso de assinatura pendente e cartão "Seus dados" com download em JSON (`/api/meus-dados`).
+- Currículo: aviso "A IA aponta, a mentoria decide".
+- Katryn: dashboard virou "Hoje", com "Novo mentorado" e fila de indicações a validar.
+- Agenda e Loja saíram dos menus (Fase 2). As tabelas existem desde a migration 0006.
+
+Continua dependendo da cliente: níveis por marco e missões, pausa da semana ativa, cupom, valores e textos finais de Serviços, número do WhatsApp, "Contar como foi a sessão", planos (item 6), movimentos errados (item 9).

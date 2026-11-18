@@ -17,6 +17,9 @@ export default async function CurriculoPage() {
     <div className="max-w-2xl">
       <h1 className="mb-6 text-3xl sm:text-4xl">Analisador de currículo</h1>
       <UploadForm restante={LIMITE_ANALISES - usadas} />
+      <p className="mt-4 rounded-2xl bg-premium p-4 text-sm">
+        <span className="font-bold">A IA aponta, a mentoria decide.</span> Leve este resultado para a próxima sessão. A validação do currículo conta como marco do seu nível.
+      </p>
 
       <div className="mt-6">
         <h2 className="mb-3 text-sm font-semibold text-foreground/60">

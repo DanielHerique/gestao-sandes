@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { requireAdmin } from "@/lib/auth/session";
+import { NovoMentorado } from "@/components/admin/novo-mentorado";
 import { resumoDaCarteira } from "@/lib/data/admin";
+import { listarValidacoesPendentes } from "@/lib/data/validacoes";
 import { PLANO_LABELS } from "@/lib/types/database";
 
 function Numero({ rotulo, valor, tom }: { rotulo: string; valor: number; tom?: string }) {
@@ -15,22 +17,49 @@ function Numero({ rotulo, valor, tom }: { rotulo: string; valor: number; tom?: s
 
 export default async function AdminDashboardPage() {
   await requireAdmin();
-  const r = await resumoDaCarteira();
+  const [r, validacoes] = await Promise.all([resumoDaCarteira(), listarValidacoesPendentes()]);
+  const naoComecou = r.emRisco.filter((c) => c.diasSemAtividade === null).length;
   const engajados = Math.max(0, r.total - r.risco);
 
   return (
     <div className="space-y-8">
-      <header>
-        <p className="eyebrow">Visão geral</p>
-        <h1 className="mt-2 text-3xl sm:text-4xl">Dashboard de carteira</h1>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="eyebrow">Visão geral</p>
+          <h1 className="mt-2 text-3xl sm:text-4xl">Hoje</h1>
+        </div>
+        <NovoMentorado />
       </header>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-        <Numero rotulo="Total de candidatos" valor={r.total} />
-        <Numero rotulo="Engajados" valor={engajados} tom="text-success" />
-        <Numero rotulo="Risco de evasão" valor={r.risco} tom="text-danger" />
-        <Numero rotulo="Documentos pendentes" valor={r.comDocumentoPendente} tom="text-brand-strong" />
+        <Numero rotulo="Precisa de contato" valor={r.risco - naoComecou} tom="text-danger" />
+        <Numero rotulo="Não começou" valor={naoComecou} tom="text-brand-strong" />
+        <Numero rotulo="Em ritmo" valor={engajados} tom="text-success" />
+        <Numero rotulo="Documentos pendentes" valor={r.comDocumentoPendente} />
       </div>
+
+      <section>
+        <h2 className="mb-3 text-sm font-semibold text-foreground/60">Fila de hoje</h2>
+        {validacoes.length === 0 ? (
+          <p className="rounded-2xl border border-dashed p-6 text-sm text-foreground/60">
+            Nenhuma indicação aguardando validação.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {validacoes.slice(0, 5).map((v) => (
+              <li key={v.id}>
+                <Link
+                  href="/admin/validacoes"
+                  className="flex flex-col gap-1 rounded-2xl border bg-surface p-4 text-sm hover:bg-brand-soft sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <span className="font-medium">Validar indicação · {v.cargo} · {v.empresa}</span>
+                  <span className="text-foreground/60">{v.candidato_nome}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section>
         <div className="mb-3 flex items-center justify-between gap-3">

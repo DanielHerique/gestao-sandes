@@ -14,6 +14,7 @@ const NAV: NavItem[] = [
 ];
 
 const MAIS: NavItem[] = [
+  { href: "/servicos", label: "Serviços", icon: "loja" },
   { href: "/progresso", label: "Progresso", icon: "progresso" },
   { href: "/prompts", label: "Prompts de IA", icon: "prompts" },
   { href: "/notificacoes", label: "Notificações", icon: "notificacoes" },
