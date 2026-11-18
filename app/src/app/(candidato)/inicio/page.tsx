@@ -50,8 +50,8 @@ export default async function InicioPage() {
   const numeros: [string, string, string][] = [
     ["No mês", String(est.candidaturasNoMes), "candidaturas"],
     ["Total", String(est.totalCandidaturas), "candidaturas"],
-    ["Avançaram", est.taxaResposta === null ? "Sem dados" : `${est.taxaResposta}%`, "viraram entrevista"],
-    ["Resposta", est.tempoMedioRespostaDias === null ? "Sem dados" : `${String(est.tempoMedioRespostaDias).replace(".", ",")}d`, "tempo médio"],
+    ["Avançaram", est.taxaResposta === null ? "-" : `${est.taxaResposta}%`, "viraram entrevista"],
+    ["Resposta", est.tempoMedioRespostaDias === null ? "-" : `${String(est.tempoMedioRespostaDias).replace(".", ",")}d`, "tempo médio"],
   ];
 
   return (
