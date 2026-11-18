@@ -142,7 +142,7 @@ export function RegrasForm({ linhasIniciais, configInicial }: { linhasIniciais: 
           type="button"
           onClick={salvar}
           disabled={pending || !alterado}
-          className="min-h-12 rounded-2xl bg-brand px-8 text-sm text-brand-fg disabled:opacity-50"
+          className="min-h-12 rounded-2xl bg-brand px-8 text-sm text-brand-fg disabled:bg-neutral disabled:text-foreground/60 disabled:shadow-none"
           style={{ boxShadow: "var(--shadow-lift)" }}
         >
           {pending ? "Salvando..." : alterado ? "Salvar regras" : "Nenhuma alteração"}

@@ -242,7 +242,7 @@ export function Pdi({
           Concluir exercício
         </button>
         <span className="self-center text-xs text-foreground/60">
-          Status atual: {statusInicial}
+          Status atual: {statusInicial.replace(/_/g, " ")}
         </span>
       </div>
     </div>

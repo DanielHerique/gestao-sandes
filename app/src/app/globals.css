@@ -55,6 +55,7 @@
   --radius-full: 999px;
 
   --shadow-float: 0 4px 16px -4px rgba(31, 36, 41, 0.16);
+  --shadow-lift: 0 4px 16px -4px rgba(31, 36, 41, 0.16);
   --shadow-overlay: 0 16px 40px -8px rgba(31, 36, 41, 0.28);
 }
 
@@ -153,6 +154,7 @@ textarea {
   min-height: 3rem;
 }
 textarea { min-height: 5rem; }
+input[type="file"] { border-radius: var(--radius-md); }
 input[type="checkbox"] { accent-color: var(--amber-500); width: 1.25rem; height: 1.25rem; }
 input[type="file"]::file-selector-button {
   margin-right: 0.75rem; border: 1px solid var(--color-text-primary); background: var(--color-bg-surface);

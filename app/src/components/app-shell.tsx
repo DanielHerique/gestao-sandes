@@ -59,6 +59,7 @@ export function AppShell({
   const principaisCelular = nav.slice(0, 4);
   const noMais = [...nav.slice(4), ...mais];
   const maisAtivo = noMais.some((i) => estaAtivo(pathname, i.href));
+  const maisAtivoDesktop = mais.some((i) => estaAtivo(pathname, i.href));
 
   const marca = (
     <Link href={nav[0]?.href ?? "/"} className="flex items-center gap-3" aria-label="Início">
@@ -127,7 +128,7 @@ export function AppShell({
                   aria-expanded={menuAberto}
                   onClick={() => setMenuAberto((v) => !v)}
                   className={`flex min-h-12 items-center gap-1 rounded-full px-4 text-sm ${
-                    maisAtivo ? "bg-brand-soft font-bold" : "text-foreground/70 hover:bg-neutral"
+                    maisAtivoDesktop ? "bg-brand-soft font-bold" : "text-foreground/70 hover:bg-neutral"
                   }`}
                 >
                   Mais
