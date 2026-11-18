@@ -62,6 +62,12 @@ export default async function InicioPage() {
         <p className="mt-3 max-w-xl text-foreground/60">
           {MENSAGENS_SISTEMA.primeiro_acesso}
         </p>
+        <Link
+          href="/candidaturas"
+          className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-brand px-6 text-brand-fg sm:w-auto"
+        >
+          Registrar uma vaga
+        </Link>
       </header>
 
       {/* Nível: cartão escuro de destaque */}
@@ -98,7 +104,7 @@ export default async function InicioPage() {
         {numeros.map(([rotulo, valor, legenda]) => (
           <div key={rotulo} className="rounded-2xl border bg-surface p-5">
             <p className="eyebrow !text-foreground/50">{rotulo}</p>
-            <p className="num mt-3 font-display text-4xl font-semibold leading-none">{valor}</p>
+            <p className="num mt-3 font-display text-[28px] font-bold leading-8">{valor}</p>
             <p className="mt-2 text-xs text-foreground/50">{legenda}</p>
           </div>
         ))}

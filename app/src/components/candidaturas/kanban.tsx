@@ -59,6 +59,12 @@ function CartaoCandidatura({
 
   const checklist = candidatura.checklist;
   const concluidos = checklist ? ITENS.filter((i) => checklist[i]).length : 0;
+  const [agora] = useState(() => Date.now());
+  const diasParada = Math.floor((agora - new Date(candidatura.updated_at).getTime()) / 86_400_000);
+  const emAberto = candidatura.status === "em_andamento" || candidatura.status === "entrevistas";
+  const sugerirFollowUp = emAberto && diasParada >= 7;
+  const indicacaoEmValidacao =
+    !!candidatura.perfil_recrutador_linkedin && !(checklist && checklist.indicacao_perfil);
 
   return (
     <div
@@ -101,6 +107,17 @@ function CartaoCandidatura({
         </div>
         <span className="num text-xs text-foreground/55">{concluidos}/{ITENS.length}</span>
       </div>
+
+      {indicacaoEmValidacao && (
+        <p className="mt-2 inline-block rounded-md bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand-strong">
+          Indicação em validação
+        </p>
+      )}
+      {sugerirFollowUp && (
+        <p className="mt-2 rounded-md bg-brand-soft px-3 py-2 text-xs">
+          Parada há {diasParada} dias. Que tal um follow-up curto hoje?
+        </p>
+      )}
 
       <label className="mt-3 flex items-center gap-2 text-xs text-foreground/60">
         Status
