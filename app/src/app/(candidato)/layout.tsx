@@ -14,6 +14,8 @@ const NAV: NavItem[] = [
 ];
 
 const MAIS: NavItem[] = [
+  { href: "/raio-x", label: "Raio-x da vaga", icon: "curriculo" },
+  { href: "/treino-entrevista", label: "Treino de entrevista", icon: "prompts" },
   { href: "/servicos", label: "Serviços", icon: "loja" },
   { href: "/progresso", label: "Progresso", icon: "progresso" },
   { href: "/prompts", label: "Prompts de IA", icon: "prompts" },
